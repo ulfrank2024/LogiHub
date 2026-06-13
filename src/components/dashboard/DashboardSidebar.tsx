@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import {
-  Package2, LayoutDashboard, PackagePlus,
+  LayoutDashboard, PackagePlus, Package2,
   Warehouse, Users, BarChart3, Settings, LogOut,
 } from "lucide-react";
 import { useClerk } from "@clerk/nextjs";
@@ -57,11 +58,17 @@ export function DashboardSidebar({ user, locale }: { user: User; locale: string 
       className="hidden md:flex flex-col w-64 min-h-screen bg-secondary text-secondary-foreground border-r border-sidebar-border shrink-0"
     >
       {/* Logo */}
-      <div className="flex items-center gap-2 px-6 py-5 border-b border-sidebar-border">
-        <Package2 className="w-6 h-6 text-primary" />
-        <span className="font-bold text-xl text-primary" style={{ fontFamily: "var(--font-heading)" }}>
-          LOGIHUB
-        </span>
+      <div className="flex items-center px-5 py-4 border-b border-sidebar-border">
+        <Link href={`/${locale}`}>
+          <Image
+            src="/logo.png"
+            alt="LOGIHUB"
+            width={130}
+            height={36}
+            className="h-9 w-auto object-contain"
+            priority
+          />
+        </Link>
       </div>
 
       {/* Profil utilisateur */}

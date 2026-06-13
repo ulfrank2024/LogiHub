@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useParams, usePathname } from "next/navigation";
 import { useAuth, UserButton } from "@clerk/nextjs";
 import { motion } from "framer-motion";
-import { Package2, Globe } from "lucide-react";
+import { Globe } from "lucide-react";
 import { cn, buttonVariants } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 
@@ -26,13 +27,15 @@ export function Navbar() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link
-            href={`/${locale}`}
-            className="flex items-center gap-2 font-bold text-xl text-primary"
-            style={{ fontFamily: "var(--font-heading)" }}
-          >
-            <Package2 className="w-6 h-6" />
-            LOGIHUB
+          <Link href={`/${locale}`} className="flex items-center">
+            <Image
+              src="/logo.png"
+              alt="LOGIHUB"
+              width={140}
+              height={40}
+              className="h-10 w-auto object-contain"
+              priority
+            />
           </Link>
 
           {/* Actions */}
