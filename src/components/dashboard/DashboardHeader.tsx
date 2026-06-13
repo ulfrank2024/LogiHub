@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Globe, Menu, X } from "lucide-react";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { UserAvatar } from "@/components/avatar/UserAvatar";
@@ -73,6 +74,9 @@ export function DashboardHeader({ user, locale }: { user: User; locale: string }
           <Globe className="w-4 h-4" />
           {isFr ? "EN" : "FR"}
         </button>
+
+        {/* Toggle thème */}
+        <ThemeToggle />
 
         {/* Cloche notifications */}
         <NotificationBell locale={locale} />

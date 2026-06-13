@@ -6,6 +6,7 @@ import { useParams, usePathname } from "next/navigation";
 import { useAuth, UserButton } from "@clerk/nextjs";
 import { motion } from "framer-motion";
 import { Globe } from "lucide-react";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { cn, buttonVariants } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 
@@ -40,6 +41,9 @@ export function Navbar() {
 
           {/* Actions */}
           <div className="flex items-center gap-3">
+            {/* Toggle thème */}
+            <ThemeToggle />
+
             {/* Switch langue */}
             <Link
               href={`/${otherLocale}${pathnameWithoutLocale}`}

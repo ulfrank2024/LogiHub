@@ -38,7 +38,8 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
-      className={`light ${syne.variable} ${dmSans.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${syne.variable} ${dmSans.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
