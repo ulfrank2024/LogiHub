@@ -24,6 +24,12 @@
 **Raison :** Mise en place de la structure de base avant le développement  
 **Impact :** Définit l'organisation complète du projet : code, documentation, migrations, suivi Claude
 
+### [2026-06-13] Fix Prisma 7 — driver adapter @prisma/adapter-neon
+**Type :** Fix / Architecture  
+**Fichiers touchés :** `src/lib/prisma.ts`, `scripts/test-db.ts`, `package.json`  
+**Raison :** Prisma 7 breaking change — le constructeur `PrismaClient` n'accepte plus d'URL directe, il faut obligatoirement un driver adapter (`SqlDriverAdapterFactory`) ou `accelerateUrl`. Pour Neon serverless on utilise `@prisma/adapter-neon`.  
+**Impact :** Tous les tests passent — 7 tables opérationnelles, CRUD + relations vérifiés.
+
 ### [2026-06-13] Migration Prisma initiale sur Neon
 **Type :** DB  
 **Fichiers touchés :** `prisma/migrations/20260613005552_init_schema/migration.sql`, `migrations/2026-06-13_init_schema.sql`, `prisma.config.ts`  
