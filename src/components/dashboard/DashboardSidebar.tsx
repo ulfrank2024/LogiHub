@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import {
-  Package2, LayoutDashboard, PackagePlus, Truck,
+  Package2, LayoutDashboard, PackagePlus,
   Warehouse, Users, BarChart3, Settings, LogOut,
 } from "lucide-react";
 import { useClerk } from "@clerk/nextjs";
@@ -19,16 +19,11 @@ type User = {
   role: Role; email: string;
 };
 
-const navByRole: Record<Role, { href: string; label: { fr: string; en: string }; icon: React.ElementType }[]> = {
+const navByRole: Record<string, { href: string; label: { fr: string; en: string }; icon: React.ElementType }[]> = {
   EXPEDITEUR: [
     { href: "expediteur", label: { fr: "Tableau de bord", en: "Dashboard" }, icon: LayoutDashboard },
     { href: "expediteur/envois", label: { fr: "Mes envois", en: "My shipments" }, icon: Package2 },
     { href: "expediteur/nouveau", label: { fr: "Nouvel envoi", en: "New shipment" }, icon: PackagePlus },
-  ],
-  TRANSPORTEUR: [
-    { href: "transporteur", label: { fr: "Tableau de bord", en: "Dashboard" }, icon: LayoutDashboard },
-    { href: "transporteur/disponibles", label: { fr: "Envois disponibles", en: "Available shipments" }, icon: Package2 },
-    { href: "transporteur/missions", label: { fr: "Mes missions", en: "My missions" }, icon: Truck },
   ],
   RESPONSABLE_ENTREPOT: [
     { href: "entrepot", label: { fr: "Tableau de bord", en: "Dashboard" }, icon: LayoutDashboard },
@@ -37,14 +32,13 @@ const navByRole: Record<Role, { href: string; label: { fr: string; en: string };
   ADMIN: [
     { href: "admin", label: { fr: "Tableau de bord", en: "Dashboard" }, icon: LayoutDashboard },
     { href: "admin/utilisateurs", label: { fr: "Utilisateurs", en: "Users" }, icon: Users },
+    { href: "admin/demandes", label: { fr: "Demandes entrepôt", en: "Warehouse requests" }, icon: Warehouse },
     { href: "admin/transactions", label: { fr: "Transactions", en: "Transactions" }, icon: BarChart3 },
-    { href: "admin/entrepots", label: { fr: "Entrepôts", en: "Warehouses" }, icon: Warehouse },
   ],
 };
 
-const roleLabel: Record<Role, { fr: string; en: string }> = {
+const roleLabel: Record<string, { fr: string; en: string }> = {
   EXPEDITEUR: { fr: "Expéditeur", en: "Sender" },
-  TRANSPORTEUR: { fr: "Transporteur", en: "Carrier" },
   RESPONSABLE_ENTREPOT: { fr: "Resp. Entrepôt", en: "Warehouse Mgr" },
   ADMIN: { fr: "Administrateur", en: "Administrator" },
 };

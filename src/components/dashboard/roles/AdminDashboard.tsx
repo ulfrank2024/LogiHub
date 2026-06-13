@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Users, Package2, DollarSign, TrendingUp, Warehouse } from "lucide-react";
+import { Users, Package2, DollarSign, TrendingUp, Warehouse, Bell } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn, buttonVariants, formatCurrency, formatDate } from "@/lib/utils";
 import { fadeInUp, staggerContainer, cardHover } from "@/lib/animations";
@@ -10,7 +10,7 @@ import { fadeInUp, staggerContainer, cardHover } from "@/lib/animations";
 type Role = "EXPEDITEUR" | "TRANSPORTEUR" | "RESPONSABLE_ENTREPOT" | "ADMIN";
 type Shipment = { id: string; status: string; origin: string; destination: string; price: number; createdAt: Date };
 type User = { id: string; firstName: string; lastName: string; email: string; role: Role; createdAt: Date };
-type Stats = { totalUsers: number; totalShipments: number; totalRevenue: number };
+type Stats = { totalUsers: number; totalShipments: number; totalRevenue: number; pendingRequests: number };
 
 const roleColors: Record<Role, string> = {
   EXPEDITEUR: "bg-blue-100 text-blue-700",
@@ -47,7 +47,7 @@ export function AdminDashboard({ user, stats, recentShipments, recentUsers, loca
           { label: isFr ? "Utilisateurs" : "Users", value: stats.totalUsers, icon: Users, color: "text-primary" },
           { label: isFr ? "Envois" : "Shipments", value: stats.totalShipments, icon: Package2, color: "text-orange-500" },
           { label: isFr ? "Revenus" : "Revenue", value: formatCurrency(stats.totalRevenue), icon: DollarSign, color: "text-green-500" },
-          { label: isFr ? "Moy. par envoi" : "Avg per shipment", value: stats.totalShipments > 0 ? formatCurrency(stats.totalRevenue / stats.totalShipments) : "—", icon: TrendingUp, color: "text-purple-500" },
+          { label: isFr ? "Demandes entrepôt" : "Warehouse requests", value: stats.pendingRequests, icon: Bell, color: stats.pendingRequests > 0 ? "text-yellow-500" : "text-muted-foreground" },
         ].map((stat) => (
           <motion.div key={stat.label} variants={cardHover} whileHover="hover">
             <Card>
@@ -70,8 +70,14 @@ export function AdminDashboard({ user, stats, recentShipments, recentUsers, loca
         <Link href={`/${locale}/dashboard/admin/utilisateurs`} className={cn(buttonVariants({ variant: "outline" }), "gap-2")}>
           <Users className="w-4 h-4" /> {isFr ? "Gérer les utilisateurs" : "Manage users"}
         </Link>
-        <Link href={`/${locale}/dashboard/admin/entrepots`} className={cn(buttonVariants({ variant: "outline" }), "gap-2")}>
-          <Warehouse className="w-4 h-4" /> {isFr ? "Gérer les entrepôts" : "Manage warehouses"}
+        <Link href={`/${locale}/dashboard/admin/demandes`} className={cn(buttonVariants({ variant: "outline" }), "gap-2", stats.pendingRequests > 0 && "border-yellow-400 text-yellow-700 hover:bg-yellow-50")}>
+          <Bell className="w-4 h-4" />
+          {isFr ? "Demandes entrepôt" : "Warehouse requests"}
+          {stats.pendingRequests > 0 && (
+            <span className="ml-1 bg-yellow-400 text-yellow-900 text-xs font-bold px-1.5 py-0.5 rounded-full">
+              {stats.pendingRequests}
+            </span>
+          )}
         </Link>
         <Link href={`/${locale}/dashboard/admin/transactions`} className={cn(buttonVariants({ variant: "outline" }), "gap-2")}>
           <DollarSign className="w-4 h-4" /> {isFr ? "Toutes les transactions" : "All transactions"}

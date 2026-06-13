@@ -5,7 +5,9 @@ import { prisma } from "@/lib/prisma";
 import { withRateLimit } from "@/lib/rate-limit";
 
 const schema = z.object({
-  role: z.enum(["EXPEDITEUR", "TRANSPORTEUR", "RESPONSABLE_ENTREPOT", "ADMIN"]),
+  role: z.enum(["EXPEDITEUR"]),
+  country: z.enum(["CA", "CM"]),
+  phone: z.string().max(30).nullable().optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -34,10 +36,13 @@ export async function POST(req: NextRequest) {
         firstName: clerkUser.firstName ?? "",
         lastName: clerkUser.lastName ?? "",
         role: parsed.data.role,
-        country: "CA",
+        country: parsed.data.country,
+        phone: parsed.data.phone ?? null,
       },
       update: {
         role: parsed.data.role,
+        country: parsed.data.country,
+        phone: parsed.data.phone ?? null,
         firstName: clerkUser.firstName ?? "",
         lastName: clerkUser.lastName ?? "",
       },

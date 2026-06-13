@@ -17,8 +17,6 @@ export default async function DashboardPage({
   switch (user.role) {
     case "EXPEDITEUR":
       redirect(`/${locale}/dashboard/expediteur`);
-    case "TRANSPORTEUR":
-      redirect(`/${locale}/dashboard/transporteur`);
     case "RESPONSABLE_ENTREPOT":
       redirect(`/${locale}/dashboard/entrepot`);
     case "ADMIN":

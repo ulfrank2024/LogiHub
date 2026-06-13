@@ -15,12 +15,13 @@ export default async function AdminPage({
   const user = await prisma.user.findUnique({ where: { clerkId: userId } });
   if (!user || user.role !== "ADMIN") redirect(`/${locale}/onboarding`);
 
-  const [totalUsers, totalShipments, totalRevenue, recentShipments, recentUsers] = await Promise.all([
+  const [totalUsers, totalShipments, totalRevenue, recentShipments, recentUsers, pendingRequests] = await Promise.all([
     prisma.user.count(),
     prisma.shipment.count(),
     prisma.payment.aggregate({ _sum: { amount: true }, where: { status: "PAYE" } }),
     prisma.shipment.findMany({ orderBy: { createdAt: "desc" }, take: 8 }),
     prisma.user.findMany({ orderBy: { createdAt: "desc" }, take: 5 }),
+    prisma.warehouseRequest.count({ where: { status: "EN_ATTENTE" } }),
   ]);
 
   return (
@@ -30,6 +31,7 @@ export default async function AdminPage({
         totalUsers,
         totalShipments,
         totalRevenue: totalRevenue._sum.amount ?? 0,
+        pendingRequests,
       }}
       recentShipments={recentShipments}
       recentUsers={recentUsers}
