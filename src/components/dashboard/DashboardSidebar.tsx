@@ -63,9 +63,9 @@ export function DashboardSidebar({ user, locale }: { user: User; locale: string 
           <Image
             src="/logo.png"
             alt="LOGIHUB"
-            width={130}
-            height={36}
-            className="h-9 w-auto object-contain"
+            width={180}
+            height={52}
+            className="h-14 w-auto object-contain"
             priority
           />
         </Link>
