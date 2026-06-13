@@ -60,8 +60,9 @@ enum CompanyStatus {
 }
 
 enum LocationType {
-  DEPOT  // Point de collecte / dépôt client
-  HUB    // Entrepôt principal / point de livraison
+  DEPOT  // Dépôt client uniquement
+  HUB    // Entrepôt / livraison uniquement
+  MIXTE  // Dépôt ET collecte (les deux)
 }
 
 // ─── Utilisateurs ────────────────────────────────────────────────────────────

@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils";
 import { fadeInUp, staggerContainer, scaleIn } from "@/lib/animations";
 
 type Country = "CA" | "CM";
-type LocationType = "DEPOT" | "HUB";
+type LocationType = "DEPOT" | "HUB" | "MIXTE";
 type Step = "choose" | "expediteur-form" | "company-info" | "company-locations" | "company-review" | "pending";
 
 type Location = {
@@ -309,8 +309,9 @@ export default function OnboardingPage() {
                         <div className="relative">
                           <select value={loc.type} onChange={(e) => updateLocation(i, "type", e.target.value)}
                             className="w-full appearance-none rounded-lg border border-input bg-background px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-ring">
-                            <option value="DEPOT">{isFr ? "DÉPÔT — collecte client" : "DEPOT — client drop-off"}</option>
-                            <option value="HUB">{isFr ? "HUB — entrepôt / livraison" : "HUB — warehouse / delivery"}</option>
+                            <option value="DEPOT">{isFr ? "DÉPÔT — dépôt client seulement" : "DEPOT — drop-off only"}</option>
+                            <option value="MIXTE">{isFr ? "MIXTE — dépôt ET collecte (retrait)" : "MIXTE — drop-off AND pickup"}</option>
+                            <option value="HUB">{isFr ? "HUB — entrepôt / livraison à domicile" : "HUB — warehouse / home delivery"}</option>
                           </select>
                           <ChevronDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                         </div>
@@ -398,7 +399,7 @@ export default function OnboardingPage() {
                           <p className="text-xs text-muted-foreground truncate max-w-[200px]">{loc.address}</p>
                         </div>
                         <span className={cn("text-xs px-2 py-0.5 rounded-full font-medium shrink-0",
-                          loc.type === "HUB" ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300" : "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300")}>
+                          loc.type === "HUB" ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300" : loc.type === "MIXTE" ? "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300" : "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300")}>
                           {loc.type}
                         </span>
                       </div>

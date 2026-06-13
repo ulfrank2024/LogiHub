@@ -50,7 +50,7 @@ function LocationsList({ locations, isFr }: { locations: LocationEntry[]; isFr: 
                 <p className="text-muted-foreground truncate max-w-[240px]">{loc.address}</p>
               </div>
               <span className={cn("shrink-0 px-2 py-0.5 rounded-full font-medium",
-                loc.type === "HUB" ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300" : "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300")}>
+                loc.type === "HUB" ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300" : loc.type === "MIXTE" ? "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300" : "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300")}>
                 {loc.type}
               </span>
             </div>
