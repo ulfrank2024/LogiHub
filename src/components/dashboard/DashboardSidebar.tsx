@@ -58,14 +58,14 @@ export function DashboardSidebar({ user, locale }: { user: User; locale: string 
       className="hidden md:flex flex-col w-64 min-h-screen bg-secondary text-secondary-foreground border-r border-sidebar-border shrink-0"
     >
       {/* Logo */}
-      <div className="flex items-center px-5 py-4 border-b border-sidebar-border">
+      <div className="flex items-center justify-center px-4 py-5 border-b border-sidebar-border">
         <Link href={`/${locale}`}>
           <Image
             src="/logo.png"
             alt="LOGIHUB"
-            width={180}
-            height={52}
-            className="h-14 w-auto object-contain"
+            width={220}
+            height={70}
+            className="h-20 w-auto object-contain"
             priority
           />
         </Link>
