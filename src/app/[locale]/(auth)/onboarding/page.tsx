@@ -32,15 +32,9 @@ export default function OnboardingPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const isFr = locale === "fr";
-  const [step, setStep] = useState<Step>("choose");
+  const isInvited = searchParams.get("type") === "entreprise";
+  const [step, setStep] = useState<Step>(isInvited ? "company-info" : "choose");
   const [loading, setLoading] = useState(false);
-
-  // Redirection directe si le lien d'invitation contient ?type=entreprise
-  useEffect(() => {
-    if (searchParams.get("type") === "entreprise") {
-      setStep("company-info");
-    }
-  }, [searchParams]);
 
   // Expéditeur
   const [country, setCountry] = useState<Country | "">("");
@@ -223,9 +217,19 @@ export default function OnboardingPage() {
           {/* ── Entreprise étape 1 : Infos générales ── */}
           {step === "company-info" && (
             <motion.div key="company-info" variants={fadeInUp} initial="hidden" animate="visible" exit={{ opacity: 0 }}>
-              <button onClick={() => setStep("choose")} className="text-sm text-muted-foreground hover:text-foreground mb-6 flex items-center gap-1">
-                <ArrowLeft className="w-4 h-4" /> {isFr ? "Retour" : "Back"}
-              </button>
+              {!isInvited && (
+                <button onClick={() => setStep("choose")} className="text-sm text-muted-foreground hover:text-foreground mb-6 flex items-center gap-1">
+                  <ArrowLeft className="w-4 h-4" /> {isFr ? "Retour" : "Back"}
+                </button>
+              )}
+              {isInvited && (
+                <div className="flex items-center gap-2 text-sm text-primary bg-primary/10 rounded-xl px-4 py-2.5 mb-6 border border-primary/20">
+                  <Building2 className="w-4 h-4 shrink-0" />
+                  <span className="font-medium">
+                    {isFr ? "Vous avez été invité(e) à rejoindre LOGIHUB en tant que partenaire logistique." : "You have been invited to join LOGIHUB as a logistics partner."}
+                  </span>
+                </div>
+              )}
               <h2 className="text-3xl font-bold text-foreground mb-1" style={{ fontFamily: "var(--font-heading)" }}>
                 <Building2 className="inline w-7 h-7 text-primary mr-2" />
                 {isFr ? "Votre entreprise" : "Your company"}
