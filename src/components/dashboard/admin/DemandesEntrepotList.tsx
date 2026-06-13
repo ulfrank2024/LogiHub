@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { cn, formatDate } from "@/lib/utils";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
+import { InviterEntrepriseModal } from "./InviterEntrepriseModal";
 
 type RequestStatus = "EN_ATTENTE" | "APPROUVE" | "REJETE";
 type LocationEntry = { name: string; country: string; city: string; address: string; type: string };
@@ -92,16 +93,19 @@ export function DemandesEntrepotList({ demandes: initial, locale }: { demandes: 
 
   return (
     <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="space-y-6">
-      <motion.div variants={fadeInUp}>
-        <h2 className="text-2xl font-bold" style={{ fontFamily: "var(--font-heading)" }}>
-          <Building2 className="inline w-6 h-6 text-primary mr-2" />
-          {isFr ? "Demandes de partenariat entreprise" : "Company partnership requests"}
-        </h2>
-        <p className="text-muted-foreground mt-1">
-          {isFr
-            ? `${pending.length} demande${pending.length !== 1 ? "s" : ""} en attente de validation.`
-            : `${pending.length} request${pending.length !== 1 ? "s" : ""} pending review.`}
-        </p>
+      <motion.div variants={fadeInUp} className="flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <h2 className="text-2xl font-bold" style={{ fontFamily: "var(--font-heading)" }}>
+            <Building2 className="inline w-6 h-6 text-primary mr-2" />
+            {isFr ? "Demandes de partenariat entreprise" : "Company partnership requests"}
+          </h2>
+          <p className="text-muted-foreground mt-1">
+            {isFr
+              ? `${pending.length} demande${pending.length !== 1 ? "s" : ""} en attente de validation.`
+              : `${pending.length} request${pending.length !== 1 ? "s" : ""} pending review.`}
+          </p>
+        </div>
+        <InviterEntrepriseModal locale={isFr ? "fr" : "en"} />
       </motion.div>
 
       {/* Demandes EN_ATTENTE */}
