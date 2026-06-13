@@ -33,16 +33,36 @@ export function InviterEntrepriseModal({ locale }: { locale: string }) {
     if (!email.includes("@")) return;
     setLoading(true);
     try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000);
       const res = await fetch("/api/admin/invitations", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, locale: inviteLocale }),
+        signal: controller.signal,
       });
-      if (!res.ok) throw new Error();
+      clearTimeout(timeout);
+      const data = await res.json();
+      if (!res.ok) {
+        // L'email a échoué mais le lien reste utilisable
+        toast.error(data.error ?? (isFr ? "Erreur lors de l'envoi." : "Send failed."), {
+          description: isFr ? "Copiez le lien ci-dessus pour l'envoyer manuellement." : "Copy the link above to share manually.",
+          duration: 6000,
+        });
+        return;
+      }
       setSent(true);
-      toast.success(isFr ? `Invitation envoyée à ${email} !` : `Invitation sent to ${email}!`);
-    } catch {
-      toast.error(isFr ? "Erreur lors de l'envoi." : "Failed to send invitation.");
+    } catch (err) {
+      const isTimeout = err instanceof Error && err.name === "AbortError";
+      toast.error(
+        isTimeout
+          ? (isFr ? "Délai dépassé. Vérifiez votre connexion." : "Request timed out.")
+          : (isFr ? "Erreur réseau." : "Network error."),
+        {
+          description: isFr ? "Utilisez le lien à copier à la place." : "Use the copy link instead.",
+          duration: 6000,
+        }
+      );
     } finally {
       setLoading(false);
     }
