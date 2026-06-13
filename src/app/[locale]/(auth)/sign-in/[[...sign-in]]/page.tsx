@@ -25,7 +25,7 @@ export default function SignInPage() {
           routing="path"
           path={`/${locale}/sign-in`}
           signUpUrl={`/${locale}/sign-up`}
-          fallbackRedirectUrl={`/${locale}/onboarding`}
+          fallbackRedirectUrl={`/${locale}/dashboard`}
           appearance={{
             elements: {
               rootBox: "w-full",
