@@ -7,16 +7,16 @@ import { shipmentPriceCAD } from "@/lib/utils";
 import { notifyAllAdmins } from "@/lib/notifications";
 
 const schema = z.object({
-  origin: z.string().min(2).max(100),
-  destination: z.string().min(2).max(100),
-  weight: z.number().positive().max(500),
-  dimensions: z.object({
-    l: z.number().positive(),
-    w: z.number().positive(),
-    h: z.number().positive(),
-  }),
-  description: z.string().min(3).max(500),
-  declaredValue: z.number().nonnegative(),
+  origin:             z.string().min(2).max(100),
+  destination:        z.string().min(2).max(100),
+  weight:             z.number().positive().max(500),
+  dimensions:         z.object({ l: z.number().positive(), w: z.number().positive(), h: z.number().positive() }),
+  description:        z.string().min(3).max(500),
+  declaredValue:      z.number().nonnegative(),
+  companyId:          z.string().optional(),
+  dropoffLocationId:  z.string().optional(),
+  deliveryLocationId: z.string().optional(),
+  deliveryType:       z.enum(["PICKUP", "HOME_DELIVERY"]).optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -33,11 +33,20 @@ export async function POST(req: NextRequest) {
     if (!parsed.success)
       return NextResponse.json({ error: "Données invalides", details: parsed.error.flatten() }, { status: 400 });
 
-    const { origin, destination, weight, dimensions, description, declaredValue } = parsed.data;
+    const { origin, destination, weight, dimensions, description, declaredValue,
+            companyId, dropoffLocationId, deliveryLocationId, deliveryType } = parsed.data;
     const price = shipmentPriceCAD(weight, declaredValue);
 
     const shipment = await prisma.shipment.create({
-      data: { senderId: user.id, origin, destination, weight, dimensions, description, declaredValue, price, status: "EN_ATTENTE" },
+      data: {
+        senderId:           user.id,
+        origin, destination, weight, dimensions, description, declaredValue, price,
+        status:             "EN_ATTENTE",
+        companyId:          companyId          ?? null,
+        dropoffLocationId:  dropoffLocationId  ?? null,
+        deliveryLocationId: deliveryLocationId ?? null,
+        deliveryType:       deliveryType       ?? "PICKUP",
+      },
     });
 
     await notifyAllAdmins({

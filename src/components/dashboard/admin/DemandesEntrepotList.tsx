@@ -4,7 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   Building2, Clock, CheckCircle2, XCircle, MapPin, Phone, Mail,
-  Loader2, FileText, Globe, ChevronDown, ChevronUp,
+  Loader2, FileText, Globe, ChevronDown, ChevronUp, User,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,10 @@ import { fadeInUp, staggerContainer } from "@/lib/animations";
 import { InviterEntrepriseModal } from "./InviterEntrepriseModal";
 
 type RequestStatus = "EN_ATTENTE" | "APPROUVE" | "REJETE";
-type LocationEntry = { name: string; country: string; city: string; address: string; type: string };
+type LocationEntry = {
+  name: string; country: string; city: string; address: string; type: string;
+  contactName?: string; contactPhone?: string; contactEmail?: string;
+};
 
 type Demande = {
   id: string; companyName: string; email: string; phone: string;
@@ -43,16 +46,25 @@ function LocationsList({ locations, isFr }: { locations: LocationEntry[]; isFr: 
       {open && (
         <div className="space-y-1.5 pt-1">
           {locations.map((loc, i) => (
-            <div key={i} className="flex items-center justify-between bg-muted/40 rounded-lg px-3 py-2 text-xs gap-3">
-              <div>
-                <p className="font-medium">{loc.name}</p>
-                <p className="text-muted-foreground">{loc.city} · {loc.country === "CA" ? "🇨🇦 Canada" : "🇨🇲 Cameroun"}</p>
-                <p className="text-muted-foreground truncate max-w-[240px]">{loc.address}</p>
+            <div key={i} className="bg-muted/40 rounded-lg px-3 py-2 text-xs space-y-1.5">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="font-medium">{loc.name}</p>
+                  <p className="text-muted-foreground">{loc.city} · {loc.country === "CA" ? "🇨🇦 Canada" : "🇨🇲 Cameroun"}</p>
+                  <p className="text-muted-foreground truncate max-w-[240px]">{loc.address}</p>
+                </div>
+                <span className={cn("shrink-0 px-2 py-0.5 rounded-full font-medium text-center",
+                  loc.type === "HUB" ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300" : loc.type === "MIXTE" ? "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300" : "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300")}>
+                  {loc.type === "DEPOT" ? "Dépôt client" : loc.type === "MIXTE" ? "Dépôt & collecte" : "Hub / livraison"}
+                </span>
               </div>
-              <span className={cn("shrink-0 px-2 py-0.5 rounded-full font-medium",
-                loc.type === "HUB" ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300" : loc.type === "MIXTE" ? "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300" : "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300")}>
-                {loc.type}
-              </span>
+              {(loc.contactName || loc.contactPhone || loc.contactEmail) && (
+                <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-muted-foreground border-t border-border/50 pt-1.5">
+                  {loc.contactName && <span className="flex items-center gap-1"><User className="w-3 h-3" />{loc.contactName}</span>}
+                  {loc.contactPhone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" />{loc.contactPhone}</span>}
+                  {loc.contactEmail && <span className="flex items-center gap-1"><Mail className="w-3 h-3" />{loc.contactEmail}</span>}
+                </div>
+              )}
             </div>
           ))}
         </div>

@@ -34,7 +34,9 @@ export async function PATCH(
 
     if (parsed.data.action === "APPROUVE") {
       const locations = request.locations as Array<{
-        name: string; country: string; city: string; address: string; type: "DEPOT" | "HUB";
+        name: string; country: string; city: string; address: string;
+        type: "DEPOT" | "HUB" | "MIXTE";
+        contactName?: string; contactPhone?: string; contactEmail?: string;
       }>;
 
       await prisma.$transaction(async (tx) => {
@@ -54,12 +56,15 @@ export async function PATCH(
         // Créer tous les points
         await tx.warehouseLocation.createMany({
           data: locations.map((loc) => ({
-            companyId: company.id,
-            name:      loc.name,
-            country:   loc.country,
-            city:      loc.city,
-            address:   loc.address,
-            type:      loc.type,
+            companyId:    company.id,
+            name:         loc.name,
+            country:      loc.country,
+            city:         loc.city,
+            address:      loc.address,
+            type:         loc.type,
+            contactName:  loc.contactName  || null,
+            contactPhone: loc.contactPhone || null,
+            contactEmail: loc.contactEmail || null,
           })),
         });
 

@@ -108,15 +108,18 @@ model LogisticsCompany {
 // ─── Points de l'entreprise (dépôt / hub) ────────────────────────────────────
 
 model WarehouseLocation {
-  id        String       @id @default(cuid())
-  companyId String
-  name      String       // "Point Douala", "Hub Montréal"
-  country   String       // "CA" | "CM"
-  city      String
-  address   String
-  type      LocationType @default(DEPOT)
-  isActive  Boolean      @default(true)
-  createdAt DateTime     @default(now())
+  id           String       @id @default(cuid())
+  companyId    String
+  name         String       // "Point Douala", "Hub Montréal"
+  country      String       // "CA" | "CM"
+  city         String
+  address      String
+  type         LocationType @default(DEPOT)
+  contactName  String?      // Responsable du point
+  contactPhone String?
+  contactEmail String?
+  isActive     Boolean      @default(true)
+  createdAt    DateTime     @default(now())
 
   company           LogisticsCompany @relation(fields: [companyId], references: [id], onDelete: Cascade)
   dropoffShipments  Shipment[]       @relation("DropoffLocation")

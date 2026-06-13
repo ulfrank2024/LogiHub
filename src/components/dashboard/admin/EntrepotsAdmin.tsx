@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import {
-  Building2, Package2, MapPin, User, ArrowDownToLine, Globe, ChevronDown, ChevronUp,
+  Building2, Package2, MapPin, User, ArrowDownToLine, Globe, ChevronDown, ChevronUp, Phone, Mail,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn, formatDate } from "@/lib/utils";
@@ -17,6 +17,7 @@ type LocationItem = {
 type Location = {
   id: string; name: string; country: string; city: string;
   address: string; type: string; isActive: boolean;
+  contactName: string | null; contactPhone: string | null; contactEmail: string | null;
   items: LocationItem[];
 };
 
@@ -43,11 +44,18 @@ function LocationCard({ loc, isFr }: { loc: Location; isFr: boolean }) {
         <div className="flex items-center gap-2 shrink-0">
           <span className={cn("text-xs px-2 py-0.5 rounded-full font-medium",
             loc.type === "HUB" ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300" : loc.type === "MIXTE" ? "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300" : "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300")}>
-            {loc.type}
+            {loc.type === "DEPOT" ? "Dépôt client" : loc.type === "MIXTE" ? "Dépôt & collecte" : "Hub / livraison"}
           </span>
           <span className="text-xs font-semibold text-primary">{enStock.length} colis</span>
         </div>
       </div>
+      {(loc.contactName || loc.contactPhone || loc.contactEmail) && (
+        <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
+          {loc.contactName && <span className="flex items-center gap-1"><User className="w-3 h-3" />{loc.contactName}</span>}
+          {loc.contactPhone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" />{loc.contactPhone}</span>}
+          {loc.contactEmail && <span className="flex items-center gap-1"><Mail className="w-3 h-3" />{loc.contactEmail}</span>}
+        </div>
+      )}
 
       {enStock.length > 0 && (
         <button onClick={() => setOpen((o) => !o)}

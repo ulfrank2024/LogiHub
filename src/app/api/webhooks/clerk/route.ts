@@ -43,8 +43,19 @@ export async function POST(req: NextRequest) {
 
   const { type, data } = event;
 
-  if (type === "user.deleted" && data.id) {
-    await prisma.user.deleteMany({ where: { clerkId: data.id } });
+  if (type === "user.created" && data.id) {
+    await prisma.user.upsert({
+      where: { clerkId: data.id },
+      create: {
+        clerkId:   data.id,
+        email:     data.email_addresses[0]?.email_address ?? "",
+        firstName: data.first_name ?? "",
+        lastName:  data.last_name ?? "",
+        role:      "EXPEDITEUR",
+        country:   "CA",
+      },
+      update: {},
+    });
   }
 
   if (type === "user.updated" && data.id) {
@@ -52,10 +63,14 @@ export async function POST(req: NextRequest) {
       where: { clerkId: data.id },
       data: {
         firstName: data.first_name ?? "",
-        lastName: data.last_name ?? "",
-        email: data.email_addresses[0]?.email_address ?? "",
+        lastName:  data.last_name ?? "",
+        email:     data.email_addresses[0]?.email_address ?? "",
       },
     });
+  }
+
+  if (type === "user.deleted" && data.id) {
+    await prisma.user.deleteMany({ where: { clerkId: data.id } });
   }
 
   return NextResponse.json({ received: true });

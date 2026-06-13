@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Package, Warehouse, ArrowRight, ArrowLeft, Loader2, Clock, CheckCircle2,
   Phone, Globe, Plus, Trash2, MapPin, Building2, Mail, Link as LinkIcon,
-  FileText, ChevronDown,
+  FileText, User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,9 +22,13 @@ type Step = "choose" | "expediteur-form" | "company-info" | "company-locations" 
 
 type Location = {
   name: string; country: Country | ""; city: string; address: string; type: LocationType;
+  contactName: string; contactPhone: string; contactEmail: string;
 };
 
-const emptyLocation = (): Location => ({ name: "", country: "", city: "", address: "", type: "DEPOT" });
+const emptyLocation = (): Location => ({
+  name: "", country: "", city: "", address: "", type: "DEPOT",
+  contactName: "", contactPhone: "", contactEmail: "",
+});
 
 export default function OnboardingPage() {
   const { locale } = useParams<{ locale: string }>();
@@ -299,22 +303,53 @@ export default function OnboardingPage() {
                       )}
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div className="space-y-1">
-                        <Label className="text-xs">{isFr ? "Nom du point *" : "Point name *"}</Label>
-                        <Input placeholder={isFr ? "Point Douala Centre" : "Douala Center Point"} value={loc.name} onChange={(e) => updateLocation(i, "name", e.target.value)} />
-                      </div>
-                      <div className="space-y-1">
-                        <Label className="text-xs">{isFr ? "Type *" : "Type *"}</Label>
-                        <div className="relative">
-                          <select value={loc.type} onChange={(e) => updateLocation(i, "type", e.target.value)}
-                            className="w-full appearance-none rounded-lg border border-input bg-background px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-ring">
-                            <option value="DEPOT">{isFr ? "DÉPÔT — dépôt client seulement" : "DEPOT — drop-off only"}</option>
-                            <option value="MIXTE">{isFr ? "MIXTE — dépôt ET collecte (retrait)" : "MIXTE — drop-off AND pickup"}</option>
-                            <option value="HUB">{isFr ? "HUB — entrepôt / livraison à domicile" : "HUB — warehouse / home delivery"}</option>
-                          </select>
-                          <ChevronDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                        </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">{isFr ? "Nom du point *" : "Point name *"}</Label>
+                      <Input placeholder={isFr ? "Point Douala Centre" : "Douala Center Point"} value={loc.name ?? ""} onChange={(e) => updateLocation(i, "name", e.target.value)} />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-xs">{isFr ? "Type de point *" : "Location type *"}</Label>
+                      <div className="grid grid-cols-3 gap-2">
+                        {([
+                          {
+                            value: "DEPOT" as LocationType,
+                            label: isFr ? "Dépôt client" : "Drop-off",
+                            desc: isFr ? "L'expéditeur dépose son colis ici. Les destinataires ne viennent pas à ce point." : "Senders drop off packages here. Recipients don't come here.",
+                            color: "orange",
+                          },
+                          {
+                            value: "MIXTE" as LocationType,
+                            label: isFr ? "Dépôt & collecte" : "Drop-off & pickup",
+                            desc: isFr ? "L'expéditeur dépose ET le destinataire vient récupérer son colis au même endroit." : "Senders drop off AND recipients collect packages at the same point.",
+                            color: "purple",
+                          },
+                          {
+                            value: "HUB" as LocationType,
+                            label: isFr ? "Hub logistique" : "Logistics hub",
+                            desc: isFr ? "Entrepôt principal. Réceptionne, stocke et organise les livraisons à domicile." : "Main warehouse. Receives, stores, and dispatches home deliveries.",
+                            color: "blue",
+                          },
+                        ]).map((t) => (
+                          <button key={t.value} type="button" onClick={() => updateLocation(i, "type", t.value)}
+                            className={cn(
+                              "text-left p-2.5 rounded-xl border-2 transition-all space-y-1",
+                              loc.type === t.value
+                                ? t.color === "orange" ? "border-orange-400 bg-orange-50 dark:bg-orange-950/20"
+                                  : t.color === "purple" ? "border-purple-400 bg-purple-50 dark:bg-purple-950/20"
+                                  : "border-blue-400 bg-blue-50 dark:bg-blue-950/20"
+                                : "border-border hover:border-muted-foreground/40"
+                            )}>
+                            <span className={cn("block text-xs font-semibold",
+                              loc.type === t.value
+                                ? t.color === "orange" ? "text-orange-700 dark:text-orange-300"
+                                  : t.color === "purple" ? "text-purple-700 dark:text-purple-300"
+                                  : "text-blue-700 dark:text-blue-300"
+                                : "text-foreground"
+                            )}>{t.label}</span>
+                            <span className="block text-[10px] leading-snug text-muted-foreground">{t.desc}</span>
+                          </button>
+                        ))}
                       </div>
                     </div>
 
@@ -333,11 +368,47 @@ export default function OnboardingPage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div className="space-y-1">
                         <Label className="text-xs">{isFr ? "Ville *" : "City *"}</Label>
-                        <Input placeholder={isFr ? "Douala" : "Douala"} value={loc.city} onChange={(e) => updateLocation(i, "city", e.target.value)} />
+                        <Input placeholder={isFr ? "Douala" : "Douala"} value={loc.city ?? ""} onChange={(e) => updateLocation(i, "city", e.target.value)} />
                       </div>
                       <div className="space-y-1">
                         <Label className="text-xs">{isFr ? "Adresse *" : "Address *"}</Label>
-                        <Input placeholder="123 Rue de la Paix" value={loc.address} onChange={(e) => updateLocation(i, "address", e.target.value)} />
+                        <Input placeholder="123 Rue de la Paix" value={loc.address ?? ""} onChange={(e) => updateLocation(i, "address", e.target.value)} />
+                      </div>
+                    </div>
+
+                    <div className="border-t border-border/50 pt-3 space-y-3">
+                      <p className="text-xs font-semibold text-muted-foreground flex items-center gap-1">
+                        <User className="w-3.5 h-3.5" />
+                        {isFr ? "Responsable du point" : "Point contact person"}
+                        <span className="font-normal italic ml-1">({isFr ? "optionnel" : "optional"})</span>
+                      </p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="space-y-1">
+                          <Label className="text-xs">{isFr ? "Nom & prénom" : "Full name"}</Label>
+                          <Input
+                            placeholder={isFr ? "Jean Dupont" : "John Doe"}
+                            value={loc.contactName ?? ""}
+                            onChange={(e) => updateLocation(i, "contactName", e.target.value)}
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-xs">{isFr ? "Téléphone du point" : "Point phone"}</Label>
+                          <Input
+                            type="tel"
+                            placeholder="+237 6 00 00 00 00"
+                            value={loc.contactPhone ?? ""}
+                            onChange={(e) => updateLocation(i, "contactPhone", e.target.value)}
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">{isFr ? "Email du point" : "Point email"}</Label>
+                        <Input
+                          type="email"
+                          placeholder="point-douala@entreprise.com"
+                          value={loc.contactEmail ?? ""}
+                          onChange={(e) => updateLocation(i, "contactEmail", e.target.value)}
+                        />
                       </div>
                     </div>
                   </motion.div>
@@ -390,18 +461,27 @@ export default function OnboardingPage() {
                   <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
                     {isFr ? `${locations.length} point(s) de réseau` : `${locations.length} network location(s)`}
                   </p>
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     {locations.map((loc, i) => (
-                      <div key={i} className="flex items-start justify-between text-sm py-2 border-b border-border/50 last:border-0 gap-3">
-                        <div>
-                          <p className="font-medium">{loc.name}</p>
-                          <p className="text-xs text-muted-foreground">{loc.city} · {loc.country === "CA" ? "🇨🇦 Canada" : "🇨🇲 Cameroun"}</p>
-                          <p className="text-xs text-muted-foreground truncate max-w-[200px]">{loc.address}</p>
+                      <div key={i} className="py-2 border-b border-border/50 last:border-0 space-y-1.5">
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <p className="font-medium text-sm">{loc.name}</p>
+                            <p className="text-xs text-muted-foreground">{loc.city} · {loc.country === "CA" ? "🇨🇦 Canada" : "🇨🇲 Cameroun"}</p>
+                            <p className="text-xs text-muted-foreground truncate max-w-[200px]">{loc.address}</p>
+                          </div>
+                          <span className={cn("text-xs px-2 py-0.5 rounded-full font-medium shrink-0",
+                            loc.type === "HUB" ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300" : loc.type === "MIXTE" ? "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300" : "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300")}>
+                            {loc.type === "DEPOT" ? "Dépôt client" : loc.type === "MIXTE" ? "Dépôt & collecte" : "Hub logistique"}
+                          </span>
                         </div>
-                        <span className={cn("text-xs px-2 py-0.5 rounded-full font-medium shrink-0",
-                          loc.type === "HUB" ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300" : loc.type === "MIXTE" ? "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300" : "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300")}>
-                          {loc.type}
-                        </span>
+                        {(loc.contactName || loc.contactPhone || loc.contactEmail) && (
+                          <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-muted-foreground">
+                            {loc.contactName && <span className="flex items-center gap-1"><User className="w-3 h-3" />{loc.contactName}</span>}
+                            {loc.contactPhone && <span className="flex items-center gap-1"><Phone className="w-3 h-3" />{loc.contactPhone}</span>}
+                            {loc.contactEmail && <span className="flex items-center gap-1"><Mail className="w-3 h-3" />{loc.contactEmail}</span>}
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>

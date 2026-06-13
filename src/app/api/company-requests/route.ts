@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
@@ -6,11 +6,14 @@ import { withRateLimit } from "@/lib/rate-limit";
 import { notifyAllAdmins } from "@/lib/notifications";
 
 const locationSchema = z.object({
-  name:    z.string().min(2).max(100),
-  country: z.enum(["CA", "CM"]),
-  city:    z.string().min(2).max(100),
-  address: z.string().min(5).max(200),
-  type:    z.enum(["DEPOT", "HUB"]),
+  name:         z.string().min(2).max(100),
+  country:      z.enum(["CA", "CM"]),
+  city:         z.string().min(2).max(100),
+  address:      z.string().min(5).max(200),
+  type:         z.enum(["DEPOT", "HUB", "MIXTE"]),
+  contactName:  z.string().max(100).optional(),
+  contactPhone: z.string().max(30).optional(),
+  contactEmail: z.string().email().optional().or(z.literal("")),
 });
 
 const schema = z.object({
@@ -27,8 +30,22 @@ export async function POST(req: NextRequest) {
     const { userId } = await auth();
     if (!userId) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
 
-    const user = await prisma.user.findUnique({ where: { clerkId: userId } });
-    if (!user) return NextResponse.json({ error: "Utilisateur introuvable" }, { status: 404 });
+    const clerkUser = await currentUser();
+    if (!clerkUser) return NextResponse.json({ error: "Utilisateur introuvable" }, { status: 404 });
+
+    // Upsert : crée le user si absent (flux invitation directe)
+    const user = await prisma.user.upsert({
+      where: { clerkId: userId },
+      create: {
+        clerkId:   userId,
+        email:     clerkUser.emailAddresses[0]?.emailAddress ?? "",
+        firstName: clerkUser.firstName ?? "",
+        lastName:  clerkUser.lastName ?? "",
+        role:      "RESPONSABLE_ENTREPOT",
+        country:   "CA",
+      },
+      update: {},
+    });
 
     const existing = await prisma.companyRequest.findUnique({ where: { userId: user.id } });
     if (existing) return NextResponse.json({ error: "Vous avez déjà soumis une demande." }, { status: 409 });
