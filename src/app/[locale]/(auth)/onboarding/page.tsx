@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -30,9 +30,17 @@ export default function OnboardingPage() {
   const { locale } = useParams<{ locale: string }>();
   const { user } = useUser();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const isFr = locale === "fr";
   const [step, setStep] = useState<Step>("choose");
   const [loading, setLoading] = useState(false);
+
+  // Redirection directe si le lien d'invitation contient ?type=entreprise
+  useEffect(() => {
+    if (searchParams.get("type") === "entreprise") {
+      setStep("company-info");
+    }
+  }, [searchParams]);
 
   // Expéditeur
   const [country, setCountry] = useState<Country | "">("");
@@ -40,7 +48,15 @@ export default function OnboardingPage() {
 
   // Entreprise
   const [companyName, setCompanyName] = useState("");
-  const [companyEmail, setCompanyEmail] = useState(user?.primaryEmailAddress?.emailAddress ?? "");
+  const [companyEmail, setCompanyEmail] = useState("");
+
+  // Pré-remplir l'email une fois Clerk chargé
+  useEffect(() => {
+    if (user?.primaryEmailAddress?.emailAddress && !companyEmail) {
+      setCompanyEmail(user.primaryEmailAddress.emailAddress);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
   const [companyPhone, setCompanyPhone] = useState("");
   const [website, setWebsite] = useState("");
   const [description, setDescription] = useState("");
