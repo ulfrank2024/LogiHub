@@ -55,8 +55,8 @@ export function DashboardSidebar({ user, locale }: { user: User; locale: string 
       variants={slideInLeft}
       initial="hidden"
       animate="visible"
-      className="hidden md:flex flex-col w-64 shrink-0 rounded-3xl overflow-hidden m-3"
-      style={{ background: "#1B4332", minHeight: "calc(100vh - 1.5rem)" }}
+      className="hidden md:flex flex-col w-64 shrink-0 rounded-3xl overflow-hidden m-3 sticky top-3 self-start h-[calc(100vh-1.5rem)]"
+      style={{ background: "#1B4332" }}
     >
       {/* ── Zone logo — fond blanc pour visibilité maximale ── */}
       <div className="flex items-center justify-center bg-white px-4 py-4 border-b border-white/10">
