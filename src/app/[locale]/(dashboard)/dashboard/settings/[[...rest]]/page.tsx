@@ -23,6 +23,8 @@ export default function SettingsPage() {
       </div>
 
       <UserProfile
+        routing="path"
+        path={`/${locale}/dashboard/settings`}
         appearance={{
           elements: {
             rootBox: "w-full",
