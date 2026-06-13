@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Bell, Globe, Menu, X } from "lucide-react";
+import { Globe, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { UserAvatar } from "@/components/avatar/UserAvatar";
 import { fadeInUp } from "@/lib/animations";
 import { cn } from "@/lib/utils";
+import { NotificationBell } from "@/components/dashboard/NotificationBell";
 
 type Role = "EXPEDITEUR" | "TRANSPORTEUR" | "RESPONSABLE_ENTREPOT" | "ADMIN";
 type User = { id: string; firstName: string; lastName: string; role: Role; email: string };
@@ -74,14 +75,7 @@ export function DashboardHeader({ user, locale }: { user: User; locale: string }
         </button>
 
         {/* Cloche notifications */}
-        <Link
-          href={`/${locale}/dashboard/notifications`}
-          className="relative p-2 rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
-        >
-          <Bell className="w-5 h-5" />
-          {/* badge non lu — à brancher dynamiquement en Phase 7 */}
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full" />
-        </Link>
+        <NotificationBell locale={locale} />
 
         {/* Avatar utilisateur */}
         <div className="flex items-center gap-2 pl-2 border-l border-border">
