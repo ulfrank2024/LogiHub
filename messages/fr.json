@@ -1,0 +1,110 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "about": "À propos",
+    "pricing": "Tarifs",
+    "signIn": "Connexion",
+    "signUp": "Commencer",
+    "dashboard": "Tableau de bord"
+  },
+  "landing": {
+    "hero": {
+      "badge": "Canada ↔ Cameroun",
+      "title": "Envoyez, en toute confiance.",
+      "subtitle": "LOGIHUB connecte la diaspora africaine avec des transporteurs de confiance pour simplifier vos envois Canada–Cameroun.",
+      "cta": "Commencer gratuitement",
+      "ctaSecondary": "En savoir plus",
+      "stat1": "2 entrepôts partenaires",
+      "stat2": "150+ clients actifs",
+      "stat3": "3 modes de paiement"
+    },
+    "howItWorks": {
+      "title": "Comment ça marche",
+      "step1": { "title": "Créez votre envoi", "desc": "Décrivez votre colis, son poids et sa destination en quelques clics." },
+      "step2": { "title": "Un transporteur l'accepte", "desc": "Un partenaire logistique de confiance prend en charge votre envoi." },
+      "step3": { "title": "Suivez en temps réel", "desc": "Recevez des notifications à chaque étape jusqu'à la livraison." }
+    },
+    "features": {
+      "title": "Pourquoi LOGIHUB ?",
+      "secure": { "title": "Sécurisé", "desc": "Vos colis sont assurés et suivis à chaque étape." },
+      "fast": { "title": "Rapide", "desc": "Réseau de transporteurs actifs sur le corridor Canada–Cameroun." },
+      "simple": { "title": "Simple", "desc": "Interface intuitive, paiement en 1 clic." }
+    }
+  },
+  "shipments": {
+    "title": "Mes envois",
+    "new": "Nouvel envoi",
+    "status": {
+      "EN_ATTENTE": "En attente",
+      "EN_COURS_MATCHING": "Recherche transporteur",
+      "ACCEPTE": "Accepté",
+      "EN_ENTREPOT_CA": "En entrepôt Canada",
+      "EN_TRANSIT": "En transit",
+      "EN_ENTREPOT_CM": "En entrepôt Cameroun",
+      "EN_LIVRAISON": "En livraison",
+      "LIVRE": "Livré",
+      "ANNULE": "Annulé",
+      "LITIGE": "Litige"
+    },
+    "form": {
+      "origin": "Origine",
+      "destination": "Destination",
+      "weight": "Poids (kg)",
+      "description": "Description du colis",
+      "declaredValue": "Valeur déclarée (CAD)",
+      "submit": "Créer l'envoi"
+    }
+  },
+  "dashboard": {
+    "welcome": "Bonjour",
+    "expediteur": {
+      "title": "Tableau de bord Expéditeur",
+      "myShipments": "Mes envois",
+      "activeShipments": "Envois actifs",
+      "delivered": "Livrés ce mois"
+    },
+    "transporteur": {
+      "title": "Tableau de bord Transporteur",
+      "available": "Envois disponibles",
+      "myMissions": "Mes missions",
+      "inProgress": "En cours"
+    },
+    "entrepot": {
+      "title": "Tableau de bord Entrepôt",
+      "inventory": "Inventaire",
+      "checkin": "Enregistrer arrivée",
+      "checkout": "Enregistrer départ",
+      "capacity": "Capacité"
+    },
+    "admin": {
+      "title": "Tableau de bord Admin",
+      "users": "Utilisateurs",
+      "transactions": "Transactions",
+      "disputes": "Litiges"
+    }
+  },
+  "payments": {
+    "title": "Paiement",
+    "method": "Méthode de paiement",
+    "stripe": "Carte bancaire",
+    "mobileMoney": "Mobile Money (MTN / Orange)",
+    "interac": "Virement Interac",
+    "pay": "Payer",
+    "success": "Paiement confirmé",
+    "pending": "En attente de confirmation"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "view": "Voir",
+    "back": "Retour",
+    "next": "Suivant",
+    "confirm": "Confirmer",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "noResults": "Aucun résultat"
+  }
+}

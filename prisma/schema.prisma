@@ -1,0 +1,144 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  EXPEDITEUR
+  TRANSPORTEUR
+  RESPONSABLE_ENTREPOT
+  ADMIN
+}
+
+enum ShipmentStatus {
+  EN_ATTENTE
+  EN_COURS_MATCHING
+  ACCEPTE
+  EN_ENTREPOT_CA
+  EN_TRANSIT
+  EN_ENTREPOT_CM
+  EN_LIVRAISON
+  LIVRE
+  ANNULE
+  LITIGE
+}
+
+enum PaymentMethod {
+  STRIPE
+  MOBILE_MONEY
+  INTERAC
+}
+
+enum PaymentStatus {
+  EN_ATTENTE
+  PAYE
+  REMBOURSE
+  ECHOUE
+}
+
+model User {
+  id        String   @id @default(cuid())
+  clerkId   String   @unique
+  email     String   @unique
+  firstName String
+  lastName  String
+  phone     String?
+  role      Role
+  country   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sentShipments    Shipment[]     @relation("Sender")
+  carriedShipments Shipment[]     @relation("Carrier")
+  warehouse        Warehouse?     @relation("Manager")
+  notifications    Notification[]
+}
+
+model Shipment {
+  id            String         @id @default(cuid())
+  senderId      String
+  carrierId     String?
+  status        ShipmentStatus @default(EN_ATTENTE)
+  origin        String
+  destination   String
+  weight        Float
+  dimensions    Json
+  description   String
+  declaredValue Float
+  price         Float
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  sender         User            @relation("Sender", fields: [senderId], references: [id])
+  carrier        User?           @relation("Carrier", fields: [carrierId], references: [id])
+  tracking       TrackingEvent[]
+  payment        Payment?
+  warehouseItems WarehouseItem[]
+}
+
+model TrackingEvent {
+  id         String   @id @default(cuid())
+  shipmentId String
+  status     String
+  location   String
+  note       String?
+  timestamp  DateTime @default(now())
+
+  shipment Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+}
+
+model Payment {
+  id         String        @id @default(cuid())
+  shipmentId String        @unique
+  amount     Float
+  currency   String        @default("CAD")
+  method     PaymentMethod
+  status     PaymentStatus @default(EN_ATTENTE)
+  stripeId   String?
+  cinetpayId String?
+  interacRef String?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  shipment Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+}
+
+model Warehouse {
+  id        String  @id @default(cuid())
+  name      String
+  country   String
+  address   String
+  city      String
+  capacity  Int
+  managerId String? @unique
+
+  manager User?           @relation("Manager", fields: [managerId], references: [id])
+  items   WarehouseItem[]
+}
+
+model WarehouseItem {
+  id          String    @id @default(cuid())
+  warehouseId String
+  shipmentId  String
+  arrivedAt   DateTime  @default(now())
+  departedAt  DateTime?
+
+  warehouse Warehouse @relation(fields: [warehouseId], references: [id])
+  shipment  Shipment  @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  title     String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

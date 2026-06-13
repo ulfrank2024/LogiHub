@@ -21,9 +21,9 @@ LogiHub/
 ├── .claude/              # Suivi des modifications Claude (journal)
 ├── docs/                 # Documentation technique et fonctionnelle
 ├── migrations/           # Exports SQL de référence des migrations
-├── prisma/               # Schéma Prisma + migrations auto-générées (créé au setup)
-├── src/                  # Code source Next.js (créé au setup)
-├── public/               # Assets statiques (créé au setup)
+├── prisma/               # Schéma Prisma + migrations auto-générées
+├── src/                  # Code source Next.js 15 (App Router)
+├── public/               # Assets statiques
 └── README.md             # Ce fichier
 ```
 
@@ -33,13 +33,14 @@ LogiHub/
 
 | Couche | Technologie |
 |---|---|
-| Framework | Next.js 15 (App Router) + TypeScript |
+| Framework | Next.js 16 (App Router) + TypeScript |
 | UI | Tailwind CSS + shadcn/ui + Framer Motion |
 | Base de données | PostgreSQL (Neon) + Prisma ORM |
 | Authentification | Clerk |
 | Paiements | Stripe · CinetPay (MTN/Orange) · Interac (semi-manuel) |
 | Email | Resend |
 | Stockage fichiers | Vercel Blob |
+| Avatars | DiceBear (IA, par rôle) |
 | i18n | next-intl (FR/EN) |
 | Validation | Zod |
 | Déploiement | Vercel |
@@ -65,6 +66,7 @@ npm install
 
 # Variables d'environnement
 cp .env.example .env.local
+# Remplir les clés dans .env.local
 
 # Base de données
 npx prisma migrate dev
@@ -80,5 +82,4 @@ npm run dev
 - [Architecture technique](docs/architecture.md)
 - [Design System (thème, avatars, animations)](docs/design-system.md)
 - [Flux par rôle](docs/roles-flows.md)
-- [Documentation API](docs/api.md)
 - [Guide de déploiement](docs/deployment.md)

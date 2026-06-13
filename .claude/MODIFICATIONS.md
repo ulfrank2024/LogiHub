@@ -24,6 +24,37 @@
 **Raison :** Mise en place de la structure de base avant le développement  
 **Impact :** Définit l'organisation complète du projet : code, documentation, migrations, suivi Claude
 
+### [2026-06-12] Phase 1 — Fondations complètes
+**Type :** Architecture / Config  
+**Fichiers touchés :**
+- `next.config.ts` — headers sécurité (CSP, HSTS, X-Frame, etc.) + next-intl plugin
+- `src/env.ts` — validation des variables d'environnement avec @t3-oss/env-nextjs + Zod
+- `.env.example` — template de toutes les variables nécessaires
+- `prisma/schema.prisma` — schéma complet (User, Shipment, TrackingEvent, Payment, Warehouse, WarehouseItem, Notification)
+- `prisma.config.ts` — config Prisma 7 avec path migrations
+- `src/middleware.ts` — Clerk auth + next-intl routing
+- `src/i18n/routing.ts` — locales FR/EN, default FR
+- `src/i18n/request.ts` — chargement messages par locale
+- `messages/fr.json` + `messages/en.json` — traductions complètes
+- `src/lib/prisma.ts` — client Prisma singleton
+- `src/lib/rate-limit.ts` — rate limiting Upstash (20 req/10s)
+- `src/lib/avatar.ts` — générateur DiceBear par rôle (lorelei/adventurer/personas/notionists)
+- `src/lib/animations.ts` — variantes Framer Motion (fadeInUp, staggerContainer, cardHover, pulse...)
+- `src/lib/stripe.ts` — client Stripe
+- `src/lib/resend.ts` — client Resend
+- `src/lib/utils.ts` — cn, formatCurrency, formatDate, formatWeight, shipmentPriceCAD
+- `src/app/globals.css` — thème Smart Africain (palette Or/Vert/Terracotta, dark mode, motif kente, scrollbar)
+- shadcn/ui initialisé avec : button, card, badge, input, label, select, dialog, dropdown-menu, avatar, separator, table, form, sheet, tabs, progress, sonner
+
+**Raison :** Phase 1 du plan d'implémentation : fondations complètes avant les pages  
+**Impact :** Projet Next.js 16 opérationnel, sécurisé, prêt pour les phases suivantes
+
+### [2026-06-12] Initialisation du dépôt Git + push GitHub
+**Type :** Config  
+**Fichiers touchés :** tous les fichiers existants  
+**Raison :** Lier le projet local au dépôt GitHub `ulfrank2024/LogiHub` pour déploiement continu  
+**Impact :** Dépôt sur `main`, remote origin = `https://github.com/ulfrank2024/LogiHub.git`. Chaque modification sera commitée et poussée après chaque changement significatif.
+
 ### [2026-06-12] Ajout du thème Smart Africain + avatars IA + Framer Motion
 **Type :** Architecture / Design  
 **Fichiers touchés :** docs/design-system.md (nouveau), docs/architecture.md  

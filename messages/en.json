@@ -1,0 +1,110 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "pricing": "Pricing",
+    "signIn": "Sign In",
+    "signUp": "Get Started",
+    "dashboard": "Dashboard"
+  },
+  "landing": {
+    "hero": {
+      "badge": "Canada ↔ Cameroon",
+      "title": "Ship with confidence.",
+      "subtitle": "LOGIHUB connects the African diaspora with trusted carriers to simplify your Canada–Cameroon shipments.",
+      "cta": "Start for free",
+      "ctaSecondary": "Learn more",
+      "stat1": "2 partner warehouses",
+      "stat2": "150+ active clients",
+      "stat3": "3 payment methods"
+    },
+    "howItWorks": {
+      "title": "How it works",
+      "step1": { "title": "Create your shipment", "desc": "Describe your package, weight and destination in a few clicks." },
+      "step2": { "title": "A carrier accepts it", "desc": "A trusted logistics partner takes charge of your shipment." },
+      "step3": { "title": "Track in real time", "desc": "Receive notifications at every step until delivery." }
+    },
+    "features": {
+      "title": "Why LOGIHUB?",
+      "secure": { "title": "Secure", "desc": "Your packages are insured and tracked at every step." },
+      "fast": { "title": "Fast", "desc": "Active carrier network on the Canada–Cameroon corridor." },
+      "simple": { "title": "Simple", "desc": "Intuitive interface, 1-click payment." }
+    }
+  },
+  "shipments": {
+    "title": "My shipments",
+    "new": "New shipment",
+    "status": {
+      "EN_ATTENTE": "Pending",
+      "EN_COURS_MATCHING": "Finding carrier",
+      "ACCEPTE": "Accepted",
+      "EN_ENTREPOT_CA": "In Canada warehouse",
+      "EN_TRANSIT": "In transit",
+      "EN_ENTREPOT_CM": "In Cameroon warehouse",
+      "EN_LIVRAISON": "Out for delivery",
+      "LIVRE": "Delivered",
+      "ANNULE": "Cancelled",
+      "LITIGE": "Dispute"
+    },
+    "form": {
+      "origin": "Origin",
+      "destination": "Destination",
+      "weight": "Weight (kg)",
+      "description": "Package description",
+      "declaredValue": "Declared value (CAD)",
+      "submit": "Create shipment"
+    }
+  },
+  "dashboard": {
+    "welcome": "Hello",
+    "expediteur": {
+      "title": "Sender Dashboard",
+      "myShipments": "My shipments",
+      "activeShipments": "Active shipments",
+      "delivered": "Delivered this month"
+    },
+    "transporteur": {
+      "title": "Carrier Dashboard",
+      "available": "Available shipments",
+      "myMissions": "My missions",
+      "inProgress": "In progress"
+    },
+    "entrepot": {
+      "title": "Warehouse Dashboard",
+      "inventory": "Inventory",
+      "checkin": "Register arrival",
+      "checkout": "Register departure",
+      "capacity": "Capacity"
+    },
+    "admin": {
+      "title": "Admin Dashboard",
+      "users": "Users",
+      "transactions": "Transactions",
+      "disputes": "Disputes"
+    }
+  },
+  "payments": {
+    "title": "Payment",
+    "method": "Payment method",
+    "stripe": "Credit card",
+    "mobileMoney": "Mobile Money (MTN / Orange)",
+    "interac": "Interac e-Transfer",
+    "pay": "Pay",
+    "success": "Payment confirmed",
+    "pending": "Awaiting confirmation"
+  },
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "back": "Back",
+    "next": "Next",
+    "confirm": "Confirm",
+    "search": "Search",
+    "filter": "Filter",
+    "noResults": "No results"
+  }
+}
