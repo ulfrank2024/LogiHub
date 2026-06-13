@@ -25,15 +25,15 @@ export function Navbar() {
       className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
+        <div className="flex h-24 items-center justify-between">
           {/* Logo */}
           <Link href={`/${locale}`} className="flex items-center">
             <Image
               src="/logo.png"
               alt="LOGIHUB"
-              width={140}
-              height={40}
-              className="h-10 w-auto object-contain"
+              width={220}
+              height={70}
+              className="h-20 w-auto object-contain"
               priority
             />
           </Link>
