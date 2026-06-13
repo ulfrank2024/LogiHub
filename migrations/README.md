@@ -40,4 +40,4 @@ npx prisma migrate status
 
 | Date | Nom | Description |
 |---|---|---|
-| — | — | Aucune migration appliquée pour l'instant |
+| 2026-06-13 | `init_schema` | Schéma initial : User, Shipment, TrackingEvent, Payment, Warehouse, WarehouseItem, Notification |

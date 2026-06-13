@@ -24,6 +24,12 @@
 **Raison :** Mise en place de la structure de base avant le développement  
 **Impact :** Définit l'organisation complète du projet : code, documentation, migrations, suivi Claude
 
+### [2026-06-13] Migration Prisma initiale sur Neon
+**Type :** DB  
+**Fichiers touchés :** `prisma/migrations/20260613005552_init_schema/migration.sql`, `migrations/2026-06-13_init_schema.sql`, `prisma.config.ts`  
+**Raison :** Connexion à la base Neon établie. `prisma.config.ts` corrigé pour charger `.env.local` en priorité (convention Next.js)  
+**Impact :** Toutes les tables créées en production sur Neon : users, shipments, tracking_events, payments, warehouses, warehouse_items, notifications. Client Prisma généré dans `src/generated/prisma`.
+
 ### [2026-06-12] Phase 1 — Fondations complètes
 **Type :** Architecture / Config  
 **Fichiers touchés :**
