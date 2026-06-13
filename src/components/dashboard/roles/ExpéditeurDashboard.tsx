@@ -11,8 +11,8 @@ import { cn, buttonVariants, formatCurrency, formatDate } from "@/lib/utils";
 import { fadeInUp, staggerContainer, cardHover } from "@/lib/animations";
 
 type ShipmentStatus =
-  | "EN_ATTENTE" | "EN_COURS_MATCHING" | "ACCEPTE"
-  | "EN_ENTREPOT_CA" | "EN_TRANSIT" | "EN_ENTREPOT_CM"
+  | "EN_ATTENTE" | "DEPOSE" | "EN_TRAITEMENT"
+  | "EN_TRANSIT" | "ARRIVE_DESTINATION" | "PRET_RETRAIT"
   | "EN_LIVRAISON" | "LIVRE" | "ANNULE" | "LITIGE";
 
 type Shipment = {
@@ -27,16 +27,16 @@ type User = {
 };
 
 const statusConfig: Record<ShipmentStatus, { label: { fr: string; en: string }; color: string; icon: React.ElementType }> = {
-  EN_ATTENTE:        { label: { fr: "En attente", en: "Pending" },         color: "bg-yellow-100 text-yellow-800", icon: Clock },
-  EN_COURS_MATCHING: { label: { fr: "Recherche transporteur", en: "Finding carrier" }, color: "bg-blue-100 text-blue-800", icon: Clock },
-  ACCEPTE:           { label: { fr: "Accepté", en: "Accepted" },           color: "bg-blue-100 text-blue-800", icon: CheckCircle2 },
-  EN_ENTREPOT_CA:    { label: { fr: "Entrepôt Canada", en: "Warehouse CA" }, color: "bg-purple-100 text-purple-800", icon: Package2 },
-  EN_TRANSIT:        { label: { fr: "En transit", en: "In transit" },      color: "bg-orange-100 text-orange-800", icon: Truck },
-  EN_ENTREPOT_CM:    { label: { fr: "Entrepôt Cameroun", en: "Warehouse CM" }, color: "bg-purple-100 text-purple-800", icon: Package2 },
-  EN_LIVRAISON:      { label: { fr: "En livraison", en: "Out for delivery" }, color: "bg-orange-100 text-orange-800", icon: Truck },
-  LIVRE:             { label: { fr: "Livré", en: "Delivered" },             color: "bg-green-100 text-green-800", icon: CheckCircle2 },
-  ANNULE:            { label: { fr: "Annulé", en: "Cancelled" },           color: "bg-red-100 text-red-800", icon: AlertCircle },
-  LITIGE:            { label: { fr: "Litige", en: "Dispute" },             color: "bg-red-100 text-red-800", icon: AlertCircle },
+  EN_ATTENTE:         { label: { fr: "En attente",         en: "Pending" },           color: "bg-yellow-100 text-yellow-800", icon: Clock },
+  DEPOSE:             { label: { fr: "Déposé",             en: "Dropped off" },       color: "bg-blue-100 text-blue-800",    icon: Package2 },
+  EN_TRAITEMENT:      { label: { fr: "En traitement",      en: "Processing" },        color: "bg-indigo-100 text-indigo-800", icon: Clock },
+  EN_TRANSIT:         { label: { fr: "En transit",         en: "In transit" },        color: "bg-orange-100 text-orange-800", icon: Truck },
+  ARRIVE_DESTINATION: { label: { fr: "Arrivé destination", en: "Arrived" },           color: "bg-purple-100 text-purple-800", icon: Package2 },
+  PRET_RETRAIT:       { label: { fr: "Prêt au retrait",    en: "Ready for pickup" },  color: "bg-teal-100 text-teal-800",    icon: CheckCircle2 },
+  EN_LIVRAISON:       { label: { fr: "En livraison",       en: "Out for delivery" },  color: "bg-orange-100 text-orange-800", icon: Truck },
+  LIVRE:              { label: { fr: "Livré",              en: "Delivered" },         color: "bg-green-100 text-green-800",  icon: CheckCircle2 },
+  ANNULE:             { label: { fr: "Annulé",             en: "Cancelled" },         color: "bg-red-100 text-red-800",     icon: AlertCircle },
+  LITIGE:             { label: { fr: "Litige",             en: "Dispute" },           color: "bg-red-100 text-red-800",     icon: AlertCircle },
 };
 
 export function ExpéditeurDashboard({ user, locale }: { user: User; locale: string }) {

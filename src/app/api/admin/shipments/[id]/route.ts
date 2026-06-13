@@ -6,8 +6,8 @@ import { withRateLimit } from "@/lib/rate-limit";
 import { createNotification } from "@/lib/notifications";
 
 const VALID_STATUSES = [
-  "EN_ATTENTE", "EN_COURS_MATCHING", "ACCEPTE",
-  "EN_ENTREPOT_CA", "EN_TRANSIT", "EN_ENTREPOT_CM",
+  "EN_ATTENTE", "DEPOSE", "EN_TRAITEMENT",
+  "EN_TRANSIT", "ARRIVE_DESTINATION", "PRET_RETRAIT",
   "EN_LIVRAISON", "LIVRE", "ANNULE", "LITIGE",
 ] as const;
 

@@ -13,8 +13,8 @@ import { cn, formatCurrency, formatDate } from "@/lib/utils";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
 
 type ShipmentStatus =
-  | "EN_ATTENTE" | "EN_COURS_MATCHING" | "ACCEPTE"
-  | "EN_ENTREPOT_CA" | "EN_TRANSIT" | "EN_ENTREPOT_CM"
+  | "EN_ATTENTE" | "DEPOSE" | "EN_TRAITEMENT"
+  | "EN_TRANSIT" | "ARRIVE_DESTINATION" | "PRET_RETRAIT"
   | "EN_LIVRAISON" | "LIVRE" | "ANNULE" | "LITIGE";
 
 type Shipment = {
@@ -25,22 +25,22 @@ type Shipment = {
 };
 
 const STATUS_FLOW: ShipmentStatus[] = [
-  "EN_ATTENTE", "EN_COURS_MATCHING", "ACCEPTE",
-  "EN_ENTREPOT_CA", "EN_TRANSIT", "EN_ENTREPOT_CM",
+  "EN_ATTENTE", "DEPOSE", "EN_TRAITEMENT",
+  "EN_TRANSIT", "ARRIVE_DESTINATION", "PRET_RETRAIT",
   "EN_LIVRAISON", "LIVRE", "ANNULE", "LITIGE",
 ];
 
 const statusConfig: Record<ShipmentStatus, { label: { fr: string; en: string }; color: string; icon: React.ElementType }> = {
-  EN_ATTENTE:        { label: { fr: "En attente",           en: "Pending" },           color: "bg-yellow-100 text-yellow-800", icon: Clock },
-  EN_COURS_MATCHING: { label: { fr: "Rech. transporteur",  en: "Finding carrier" },   color: "bg-blue-100 text-blue-800",    icon: Clock },
-  ACCEPTE:           { label: { fr: "Accepté",              en: "Accepted" },          color: "bg-blue-100 text-blue-800",    icon: CheckCircle2 },
-  EN_ENTREPOT_CA:    { label: { fr: "Entrepôt Canada",      en: "Warehouse CA" },      color: "bg-purple-100 text-purple-800", icon: Package2 },
-  EN_TRANSIT:        { label: { fr: "En transit",           en: "In transit" },        color: "bg-orange-100 text-orange-800", icon: Truck },
-  EN_ENTREPOT_CM:    { label: { fr: "Entrepôt Cameroun",    en: "Warehouse CM" },      color: "bg-purple-100 text-purple-800", icon: Package2 },
-  EN_LIVRAISON:      { label: { fr: "En livraison",         en: "Out for delivery" },  color: "bg-orange-100 text-orange-800", icon: Truck },
-  LIVRE:             { label: { fr: "Livré",                en: "Delivered" },         color: "bg-green-100 text-green-800",  icon: CheckCircle2 },
-  ANNULE:            { label: { fr: "Annulé",               en: "Cancelled" },         color: "bg-red-100 text-red-800",     icon: AlertCircle },
-  LITIGE:            { label: { fr: "Litige",               en: "Dispute" },           color: "bg-red-100 text-red-800",     icon: AlertCircle },
+  EN_ATTENTE:         { label: { fr: "En attente",          en: "Pending" },           color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300", icon: Clock },
+  DEPOSE:             { label: { fr: "Déposé",              en: "Dropped off" },       color: "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300",         icon: Package2 },
+  EN_TRAITEMENT:      { label: { fr: "En traitement",       en: "Processing" },        color: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-300", icon: Clock },
+  EN_TRANSIT:         { label: { fr: "En transit",          en: "In transit" },        color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300", icon: Truck },
+  ARRIVE_DESTINATION: { label: { fr: "Arrivé destination",  en: "Arrived" },           color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300", icon: Package2 },
+  PRET_RETRAIT:       { label: { fr: "Prêt au retrait",     en: "Ready for pickup" },  color: "bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300",         icon: CheckCircle2 },
+  EN_LIVRAISON:       { label: { fr: "En livraison",        en: "Out for delivery" },  color: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300", icon: Truck },
+  LIVRE:              { label: { fr: "Livré",               en: "Delivered" },         color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",     icon: CheckCircle2 },
+  ANNULE:             { label: { fr: "Annulé",              en: "Cancelled" },         color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",             icon: AlertCircle },
+  LITIGE:             { label: { fr: "Litige",              en: "Dispute" },           color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",             icon: AlertCircle },
 };
 
 const filterGroups = [
@@ -51,7 +51,7 @@ const filterGroups = [
 ] as const;
 
 type FilterKey = typeof filterGroups[number]["key"];
-const inProgress: ShipmentStatus[] = ["EN_ATTENTE","EN_COURS_MATCHING","ACCEPTE","EN_ENTREPOT_CA","EN_TRANSIT","EN_ENTREPOT_CM","EN_LIVRAISON"];
+const inProgress: ShipmentStatus[] = ["EN_ATTENTE","DEPOSE","EN_TRAITEMENT","EN_TRANSIT","ARRIVE_DESTINATION","PRET_RETRAIT","EN_LIVRAISON"];
 
 export function ShipmentsAdmin({ shipments: initial, locale }: { shipments: Shipment[]; locale: string }) {
   const isFr = locale === "fr";

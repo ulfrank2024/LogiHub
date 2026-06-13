@@ -7,6 +7,8 @@ datasource db {
   provider = "postgresql"
 }
 
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
 enum Role {
   EXPEDITEUR
   TRANSPORTEUR
@@ -15,16 +17,21 @@ enum Role {
 }
 
 enum ShipmentStatus {
-  EN_ATTENTE
-  EN_COURS_MATCHING
-  ACCEPTE
-  EN_ENTREPOT_CA
-  EN_TRANSIT
-  EN_ENTREPOT_CM
-  EN_LIVRAISON
-  LIVRE
+  EN_ATTENTE         // Créé, en attente de dépôt
+  DEPOSE             // Déposé au point de collecte
+  EN_TRAITEMENT      // Traité par l'entreprise partenaire
+  EN_TRANSIT         // En transit international
+  ARRIVE_DESTINATION // Arrivé au point destination
+  PRET_RETRAIT       // Prêt à être retiré
+  EN_LIVRAISON       // En cours de livraison à domicile
+  LIVRE              // Livré
   ANNULE
   LITIGE
+}
+
+enum DeliveryType {
+  PICKUP          // Le destinataire vient chercher au point
+  HOME_DELIVERY   // Livraison à l'adresse (frais supplémentaires)
 }
 
 enum PaymentMethod {
@@ -46,6 +53,19 @@ enum RequestStatus {
   REJETE
 }
 
+enum CompanyStatus {
+  EN_ATTENTE
+  ACTIVE
+  SUSPENDUE
+}
+
+enum LocationType {
+  DEPOT  // Point de collecte / dépôt client
+  HUB    // Entrepôt principal / point de livraison
+}
+
+// ─── Utilisateurs ────────────────────────────────────────────────────────────
+
 model User {
   id        String   @id @default(cuid())
   clerkId   String   @unique
@@ -60,32 +80,112 @@ model User {
 
   sentShipments    Shipment[]       @relation("Sender")
   carriedShipments Shipment[]       @relation("Carrier")
-  warehouse        Warehouse?       @relation("Manager")
+  managedCompany   LogisticsCompany? @relation("CompanyManager")
+  companyRequest   CompanyRequest?
   notifications    Notification[]
-  warehouseRequest WarehouseRequest?
 }
+
+// ─── Entreprises partenaires (entrepôts) ─────────────────────────────────────
+
+model LogisticsCompany {
+  id          String        @id @default(cuid())
+  name        String
+  email       String
+  phone       String
+  website     String?
+  description String?
+  status      CompanyStatus @default(EN_ATTENTE)
+  managerId   String?       @unique
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  manager   User?               @relation("CompanyManager", fields: [managerId], references: [id])
+  locations WarehouseLocation[]
+  shipments Shipment[]
+}
+
+// ─── Points de l'entreprise (dépôt / hub) ────────────────────────────────────
+
+model WarehouseLocation {
+  id        String       @id @default(cuid())
+  companyId String
+  name      String       // "Point Douala", "Hub Montréal"
+  country   String       // "CA" | "CM"
+  city      String
+  address   String
+  type      LocationType @default(DEPOT)
+  isActive  Boolean      @default(true)
+  createdAt DateTime     @default(now())
+
+  company           LogisticsCompany @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  dropoffShipments  Shipment[]       @relation("DropoffLocation")
+  deliveryShipments Shipment[]       @relation("DeliveryLocation")
+  items             LocationItem[]
+}
+
+// ─── Suivi des colis par point ────────────────────────────────────────────────
+
+model LocationItem {
+  id         String    @id @default(cuid())
+  locationId String
+  shipmentId String
+  arrivedAt  DateTime  @default(now())
+  departedAt DateTime?
+
+  location WarehouseLocation @relation(fields: [locationId], references: [id])
+  shipment Shipment          @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+}
+
+// ─── Demandes d'inscription entreprise ───────────────────────────────────────
+
+model CompanyRequest {
+  id          String        @id @default(cuid())
+  userId      String        @unique
+  companyName String
+  email       String
+  phone       String
+  website     String?
+  description String?
+  locations   Json          // [{name, country, city, address, type}]
+  status      RequestStatus @default(EN_ATTENTE)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─── Envois ──────────────────────────────────────────────────────────────────
 
 model Shipment {
-  id            String         @id @default(cuid())
-  senderId      String
-  carrierId     String?
-  status        ShipmentStatus @default(EN_ATTENTE)
-  origin        String
-  destination   String
-  weight        Float
-  dimensions    Json
-  description   String
-  declaredValue Float
-  price         Float
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id                 String         @id @default(cuid())
+  senderId           String
+  carrierId          String?
+  companyId          String?
+  dropoffLocationId  String?
+  deliveryLocationId String?
+  deliveryType       DeliveryType   @default(PICKUP)
+  status             ShipmentStatus @default(EN_ATTENTE)
+  origin             String
+  destination        String
+  weight             Float
+  dimensions         Json
+  description        String
+  declaredValue      Float
+  price              Float
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
 
-  sender         User            @relation("Sender", fields: [senderId], references: [id])
-  carrier        User?           @relation("Carrier", fields: [carrierId], references: [id])
-  tracking       TrackingEvent[]
-  payment        Payment?
-  warehouseItems WarehouseItem[]
+  sender          User               @relation("Sender",          fields: [senderId],           references: [id])
+  carrier         User?              @relation("Carrier",         fields: [carrierId],           references: [id])
+  company         LogisticsCompany?  @relation(                   fields: [companyId],           references: [id])
+  dropoffLocation  WarehouseLocation? @relation("DropoffLocation", fields: [dropoffLocationId],  references: [id])
+  deliveryLocation WarehouseLocation? @relation("DeliveryLocation",fields: [deliveryLocationId], references: [id])
+  tracking        TrackingEvent[]
+  payment         Payment?
+  items           LocationItem[]
 }
+
+// ─── Tracking ─────────────────────────────────────────────────────────────────
 
 model TrackingEvent {
   id         String   @id @default(cuid())
@@ -97,6 +197,8 @@ model TrackingEvent {
 
   shipment Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
 }
+
+// ─── Paiements ───────────────────────────────────────────────────────────────
 
 model Payment {
   id         String        @id @default(cuid())
@@ -114,46 +216,7 @@ model Payment {
   shipment Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
 }
 
-model Warehouse {
-  id        String  @id @default(cuid())
-  name      String
-  country   String
-  address   String
-  city      String
-  capacity  Int
-  managerId String? @unique
-
-  manager User?           @relation("Manager", fields: [managerId], references: [id])
-  items   WarehouseItem[]
-}
-
-model WarehouseItem {
-  id          String    @id @default(cuid())
-  warehouseId String
-  shipmentId  String
-  arrivedAt   DateTime  @default(now())
-  departedAt  DateTime?
-
-  warehouse Warehouse @relation(fields: [warehouseId], references: [id])
-  shipment  Shipment  @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
-}
-
-model WarehouseRequest {
-  id        String        @id @default(cuid())
-  userId    String        @unique
-  name      String
-  address   String
-  city      String
-  country   String
-  capacity  Int
-  phone     String
-  notes     String?
-  status    RequestStatus @default(EN_ATTENTE)
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
+// ─── Notifications ────────────────────────────────────────────────────────────
 
 model Notification {
   id        String   @id @default(cuid())

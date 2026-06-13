@@ -13,18 +13,29 @@ export default async function EntrepotPage({
   if (!userId) redirect(`/${locale}/sign-in`);
 
   const user = await prisma.user.findUnique({ where: { clerkId: userId } });
-  if (!user || user.role !== "RESPONSABLE_ENTREPOT") redirect(`/${locale}/onboarding`);
+  if (!user || user.role !== "RESPONSABLE_ENTREPOT") redirect(`/${locale}/dashboard`);
 
-  const warehouse = await prisma.warehouse.findUnique({
+  const company = await prisma.logisticsCompany.findUnique({
     where: { managerId: user.id },
     include: {
-      items: {
-        include: { shipment: true },
-        orderBy: { arrivedAt: "desc" },
-        take: 10,
+      locations: {
+        where: { isActive: true },
+        orderBy: { country: "asc" },
+        include: {
+          items: {
+            include: {
+              shipment: {
+                select: { id: true, origin: true, destination: true, weight: true, description: true },
+              },
+            },
+            orderBy: { arrivedAt: "desc" },
+            take: 20,
+          },
+        },
       },
     },
   });
 
-  return <EntrepotDashboard user={user} warehouse={warehouse} locale={locale} />;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return <EntrepotDashboard user={user} company={company as any} locale={locale} />;
 }

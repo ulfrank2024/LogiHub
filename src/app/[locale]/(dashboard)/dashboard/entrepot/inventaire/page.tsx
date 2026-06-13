@@ -15,24 +15,40 @@ export default async function InventairePage({
   const user = await prisma.user.findUnique({ where: { clerkId: userId } });
   if (!user || user.role !== "RESPONSABLE_ENTREPOT") redirect(`/${locale}/dashboard`);
 
-  const warehouse = await prisma.warehouse.findUnique({
+  const company = await prisma.logisticsCompany.findUnique({
     where: { managerId: user.id },
     include: {
-      items: {
-        include: { shipment: true },
-        orderBy: { arrivedAt: "desc" },
+      locations: {
+        where: { isActive: true },
+        orderBy: { country: "asc" },
+        include: {
+          items: {
+            include: {
+              shipment: {
+                include: { sender: { select: { firstName: true, lastName: true } } },
+              },
+            },
+            orderBy: { arrivedAt: "desc" },
+          },
+        },
       },
     },
   });
 
-  if (!warehouse) redirect(`/${locale}/dashboard/entrepot`);
+  if (!company) redirect(`/${locale}/dashboard/entrepot`);
 
-  // Envois éligibles au check-in : pas encore dans cet entrepôt, statuts compatibles
-  const alreadyInWarehouse = warehouse.items.map((i) => i.shipmentId);
+  // Envois éligibles au check-in : pas encore dans un point actif de cette entreprise
+  const locationIds = company.locations.map((l) => l.id);
+  const alreadyPresent = await prisma.locationItem.findMany({
+    where: { locationId: { in: locationIds }, departedAt: null },
+    select: { shipmentId: true },
+  });
+  const alreadyPresentIds = alreadyPresent.map((i) => i.shipmentId);
+
   const availableShipments = await prisma.shipment.findMany({
     where: {
-      id: { notIn: alreadyInWarehouse },
-      status: { in: ["EN_ATTENTE", "ACCEPTE", "EN_COURS_MATCHING"] },
+      id: { notIn: alreadyPresentIds },
+      status: { in: ["EN_ATTENTE", "EN_TRANSIT"] },
     },
     include: { sender: { select: { firstName: true, lastName: true } } },
     orderBy: { createdAt: "desc" },
@@ -41,7 +57,8 @@ export default async function InventairePage({
 
   return (
     <EntrepotInventaire
-      warehouse={warehouse}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      company={company as any}
       availableShipments={availableShipments}
       locale={locale}
     />

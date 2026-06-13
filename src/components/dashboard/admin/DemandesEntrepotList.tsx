@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Warehouse, Clock, CheckCircle2, XCircle, MapPin, Phone, Hash, Loader2, FileText } from "lucide-react";
+import {
+  Building2, Clock, CheckCircle2, XCircle, MapPin, Phone, Mail,
+  Loader2, FileText, Globe, ChevronDown, ChevronUp,
+} from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -10,19 +13,52 @@ import { cn, formatDate } from "@/lib/utils";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
 
 type RequestStatus = "EN_ATTENTE" | "APPROUVE" | "REJETE";
+type LocationEntry = { name: string; country: string; city: string; address: string; type: string };
 
 type Demande = {
-  id: string; name: string; address: string; city: string; country: string;
-  capacity: number; phone: string; notes: string | null;
+  id: string; companyName: string; email: string; phone: string;
+  website: string | null; description: string | null;
+  locations: LocationEntry[];
   status: RequestStatus; createdAt: Date;
   user: { id: string; firstName: string; lastName: string; email: string };
 };
 
 const statusConfig: Record<RequestStatus, { label: { fr: string; en: string }; color: string; icon: React.ElementType }> = {
-  EN_ATTENTE: { label: { fr: "En attente", en: "Pending" }, color: "bg-yellow-100 text-yellow-800", icon: Clock },
-  APPROUVE:   { label: { fr: "Approuvé", en: "Approved" }, color: "bg-green-100 text-green-800", icon: CheckCircle2 },
-  REJETE:     { label: { fr: "Rejeté", en: "Rejected" }, color: "bg-red-100 text-red-800", icon: XCircle },
+  EN_ATTENTE: { label: { fr: "En attente", en: "Pending" }, color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300", icon: Clock },
+  APPROUVE:   { label: { fr: "Approuvé", en: "Approved" }, color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300", icon: CheckCircle2 },
+  REJETE:     { label: { fr: "Rejeté", en: "Rejected" }, color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300", icon: XCircle },
 };
+
+function LocationsList({ locations, isFr }: { locations: LocationEntry[]; isFr: boolean }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="space-y-1">
+      <button onClick={() => setOpen((o) => !o)}
+        className="text-xs font-semibold text-muted-foreground flex items-center gap-1 hover:text-foreground transition-colors">
+        <MapPin className="w-3.5 h-3.5" />
+        {isFr ? `${locations.length} point(s) de réseau` : `${locations.length} network location(s)`}
+        {open ? <ChevronUp className="w-3 h-3 ml-1" /> : <ChevronDown className="w-3 h-3 ml-1" />}
+      </button>
+      {open && (
+        <div className="space-y-1.5 pt-1">
+          {locations.map((loc, i) => (
+            <div key={i} className="flex items-center justify-between bg-muted/40 rounded-lg px-3 py-2 text-xs gap-3">
+              <div>
+                <p className="font-medium">{loc.name}</p>
+                <p className="text-muted-foreground">{loc.city} · {loc.country === "CA" ? "🇨🇦 Canada" : "🇨🇲 Cameroun"}</p>
+                <p className="text-muted-foreground truncate max-w-[240px]">{loc.address}</p>
+              </div>
+              <span className={cn("shrink-0 px-2 py-0.5 rounded-full font-medium",
+                loc.type === "HUB" ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300" : "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300")}>
+                {loc.type}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function DemandesEntrepotList({ demandes: initial, locale }: { demandes: Demande[]; locale: string }) {
   const isFr = locale === "fr";
@@ -32,18 +68,16 @@ export function DemandesEntrepotList({ demandes: initial, locale }: { demandes: 
   async function handleAction(id: string, action: "APPROUVE" | "REJETE") {
     setLoadingId(id);
     try {
-      const res = await fetch(`/api/warehouse-requests/${id}`, {
+      const res = await fetch(`/api/company-requests/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action }),
       });
       if (!res.ok) throw new Error();
-      setDemandes((prev) =>
-        prev.map((d) => (d.id === id ? { ...d, status: action } : d))
-      );
+      setDemandes((prev) => prev.map((d) => (d.id === id ? { ...d, status: action } : d)));
       toast.success(
         action === "APPROUVE"
-          ? isFr ? "Demande approuvée — entrepôt créé !" : "Request approved — warehouse created!"
+          ? isFr ? "Entreprise approuvée — accès activé !" : "Company approved — access granted!"
           : isFr ? "Demande rejetée." : "Request rejected."
       );
     } catch {
@@ -60,13 +94,13 @@ export function DemandesEntrepotList({ demandes: initial, locale }: { demandes: 
     <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="space-y-6">
       <motion.div variants={fadeInUp}>
         <h2 className="text-2xl font-bold" style={{ fontFamily: "var(--font-heading)" }}>
-          <Warehouse className="inline w-6 h-6 text-primary mr-2" />
-          {isFr ? "Demandes de gestion d'entrepôt" : "Warehouse management requests"}
+          <Building2 className="inline w-6 h-6 text-primary mr-2" />
+          {isFr ? "Demandes de partenariat entreprise" : "Company partnership requests"}
         </h2>
         <p className="text-muted-foreground mt-1">
           {isFr
-            ? `${pending.length} demande${pending.length > 1 ? "s" : ""} en attente de validation.`
-            : `${pending.length} request${pending.length > 1 ? "s" : ""} pending review.`}
+            ? `${pending.length} demande${pending.length !== 1 ? "s" : ""} en attente de validation.`
+            : `${pending.length} request${pending.length !== 1 ? "s" : ""} pending review.`}
         </p>
       </motion.div>
 
@@ -86,11 +120,14 @@ export function DemandesEntrepotList({ demandes: initial, locale }: { demandes: 
             {isFr ? "En attente" : "Pending"}
           </h3>
           {pending.map((d) => (
-            <Card key={d.id} className="border-yellow-200 bg-yellow-50/30">
+            <Card key={d.id} className="border-yellow-200 dark:border-yellow-800 bg-yellow-50/30 dark:bg-yellow-900/10">
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between gap-4 flex-wrap">
                   <div>
-                    <CardTitle className="text-base font-semibold">{d.name}</CardTitle>
+                    <CardTitle className="text-base font-semibold flex items-center gap-2">
+                      <Building2 className="w-4 h-4 text-primary" />
+                      {d.companyName}
+                    </CardTitle>
                     <p className="text-sm text-muted-foreground mt-0.5">
                       {d.user.firstName} {d.user.lastName} · {d.user.email}
                     </p>
@@ -103,41 +140,38 @@ export function DemandesEntrepotList({ demandes: initial, locale }: { demandes: 
               <CardContent className="space-y-3">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
                   <p className="flex items-center gap-2 text-muted-foreground">
-                    <MapPin className="w-4 h-4 shrink-0" />
-                    {d.address}, {d.city} — {d.country === "CA" ? "🇨🇦 Canada" : "🇨🇲 Cameroun"}
+                    <Mail className="w-4 h-4 shrink-0" /> {d.email}
                   </p>
                   <p className="flex items-center gap-2 text-muted-foreground">
                     <Phone className="w-4 h-4 shrink-0" /> {d.phone}
                   </p>
-                  <p className="flex items-center gap-2 text-muted-foreground">
-                    <Hash className="w-4 h-4 shrink-0" /> {d.capacity} {isFr ? "emplacements" : "slots"}
-                  </p>
-                  <p className="flex items-center gap-2 text-muted-foreground">
-                    <Clock className="w-4 h-4 shrink-0" /> {formatDate(d.createdAt)}
+                  {d.website && (
+                    <p className="flex items-center gap-2 text-muted-foreground col-span-2">
+                      <Globe className="w-4 h-4 shrink-0" /> {d.website}
+                    </p>
+                  )}
+                  <p className="text-xs text-muted-foreground col-span-2">
+                    <Clock className="w-3.5 h-3.5 inline mr-1" />{formatDate(d.createdAt)}
                   </p>
                 </div>
-                {d.notes && (
+
+                {d.description && (
                   <p className="flex items-start gap-2 text-sm text-muted-foreground bg-muted/50 rounded-lg p-3">
                     <FileText className="w-4 h-4 shrink-0 mt-0.5" />
-                    {d.notes}
+                    {d.description}
                   </p>
                 )}
+
+                <LocationsList locations={d.locations} isFr={isFr} />
+
                 <div className="flex gap-3 pt-2">
-                  <Button
-                    size="sm"
-                    disabled={loadingId === d.id}
-                    onClick={() => handleAction(d.id, "APPROUVE")}
-                    className="gap-2 bg-green-600 hover:bg-green-700 text-white"
-                  >
+                  <Button size="sm" disabled={loadingId === d.id} onClick={() => handleAction(d.id, "APPROUVE")}
+                    className="gap-2 bg-green-600 hover:bg-green-700 text-white">
                     {loadingId === d.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
                     {isFr ? "Approuver" : "Approve"}
                   </Button>
-                  <Button
-                    size="sm" variant="outline"
-                    disabled={loadingId === d.id}
-                    onClick={() => handleAction(d.id, "REJETE")}
-                    className="gap-2 border-red-300 text-red-600 hover:bg-red-50"
-                  >
+                  <Button size="sm" variant="outline" disabled={loadingId === d.id} onClick={() => handleAction(d.id, "REJETE")}
+                    className="gap-2 border-red-300 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30">
                     <XCircle className="w-4 h-4" />
                     {isFr ? "Rejeter" : "Reject"}
                   </Button>
@@ -161,8 +195,10 @@ export function DemandesEntrepotList({ demandes: initial, locale }: { demandes: 
               <Card key={d.id} className="opacity-70">
                 <CardContent className="flex items-center justify-between py-4 px-5 gap-4">
                   <div>
-                    <p className="font-medium text-sm">{d.name} — {d.city}, {d.country}</p>
-                    <p className="text-xs text-muted-foreground">{d.user.firstName} {d.user.lastName} · {formatDate(d.createdAt)}</p>
+                    <p className="font-medium text-sm">{d.companyName}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {d.user.firstName} {d.user.lastName} · {d.locations.length} point(s) · {formatDate(d.createdAt)}
+                    </p>
                   </div>
                   <span className={cn("flex items-center gap-1 text-xs px-2 py-1 rounded-full font-medium shrink-0", cfg.color)}>
                     <Icon className="w-3 h-3" />

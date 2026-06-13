@@ -72,7 +72,7 @@ export default async function AdminPage({
     prisma.user.count(),
     prisma.shipment.count(),
     prisma.payment.aggregate({ _sum: { amount: true }, where: { status: "PAYE" } }),
-    prisma.warehouseRequest.count({ where: { status: "EN_ATTENTE" } }),
+    prisma.companyRequest.count({ where: { status: "EN_ATTENTE" } }),
     prisma.user.count({ where: { createdAt: { gte: todayStart } } }),
     prisma.shipment.count({ where: { status: "EN_ATTENTE" } }),
     prisma.shipment.findMany({ orderBy: { createdAt: "desc" }, take: 8 }),

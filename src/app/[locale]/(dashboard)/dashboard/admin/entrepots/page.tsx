@@ -15,16 +15,26 @@ export default async function AdminEntrepotsPage({
   const admin = await prisma.user.findUnique({ where: { clerkId: userId } });
   if (!admin || admin.role !== "ADMIN") redirect(`/${locale}/dashboard`);
 
-  const warehouses = await prisma.warehouse.findMany({
+  const companies = await prisma.logisticsCompany.findMany({
+    where: { status: "ACTIVE" },
+    orderBy: { name: "asc" },
     include: {
       manager: { select: { firstName: true, lastName: true, email: true } },
-      items: {
-        include: { shipment: { select: { origin: true, destination: true, weight: true } } },
-        orderBy: { arrivedAt: "desc" },
+      locations: {
+        where: { isActive: true },
+        orderBy: { country: "asc" },
+        include: {
+          items: {
+            include: {
+              shipment: { select: { origin: true, destination: true, weight: true } },
+            },
+            orderBy: { arrivedAt: "desc" },
+          },
+        },
       },
     },
-    orderBy: { country: "asc" },
   });
 
-  return <EntrepotsAdmin warehouses={warehouses} locale={locale} />;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return <EntrepotsAdmin companies={companies as any} locale={locale} />;
 }
