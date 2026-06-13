@@ -24,6 +24,30 @@
 **Raison :** Mise en place de la structure de base avant le développement  
 **Impact :** Définit l'organisation complète du projet : code, documentation, migrations, suivi Claude
 
+### [2026-06-13] Phase 2 — Auth, Onboarding, Landing page
+**Type :** Feature  
+**Fichiers touchés :**
+- `src/app/layout.tsx` — root layout minimal (redirect /fr)
+- `src/app/page.tsx` — redirect vers /fr
+- `src/app/[locale]/layout.tsx` — layout avec Clerk + next-intl + ThemeProvider + polices Syne/DM Sans
+- `src/app/[locale]/(auth)/sign-in/` — page sign-in Clerk (thème africain)
+- `src/app/[locale]/(auth)/sign-up/` — page sign-up Clerk
+- `src/app/[locale]/(auth)/onboarding/` — sélection de rôle avec Framer Motion
+- `src/app/[locale]/(public)/page.tsx` — landing page
+- `src/app/[locale]/(dashboard)/dashboard/page.tsx` — redirect par rôle
+- `src/app/api/users/role/route.ts` — API POST enregistrement rôle + upsert user DB
+- `src/app/api/webhooks/clerk/route.ts` — webhook Clerk (user.updated, user.deleted)
+- `src/components/layout/Navbar.tsx` — navbar sticky avec switch langue FR/EN
+- `src/components/layout/HeroSection.tsx` — hero avec avatars DiceBear orbitaux
+- `src/components/layout/HowItWorks.tsx` — section 3 étapes animée
+- `src/components/avatar/UserAvatar.tsx` — composant avatar DiceBear par rôle
+- `src/lib/avatar.ts` — fix types DiceBear (cast any pour union)
+- `src/lib/stripe.ts` — fix version API Stripe (2026-05-27.dahlia)
+- `src/lib/utils.ts` — export buttonVariants
+
+**Raison :** Phase 2 — flux d'authentification complet avec sélection de rôle et synchronisation DB  
+**Impact :** L'utilisateur peut s'inscrire, choisir son rôle, être créé en base et redirigé vers son dashboard
+
 ### [2026-06-13] Fix Prisma 7 — driver adapter @prisma/adapter-neon
 **Type :** Fix / Architecture  
 **Fichiers touchés :** `src/lib/prisma.ts`, `scripts/test-db.ts`, `package.json`  
