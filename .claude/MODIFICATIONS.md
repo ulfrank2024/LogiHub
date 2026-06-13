@@ -103,4 +103,24 @@
 - Motifs géométriques kente en background (opacité ≤5%, décoratif seulement)
 - Variantes d'animation standards définies dans `src/lib/animations.ts`
 
+### [2026-06-12] Fix rate-limit.ts — Upstash Redis optionnel en dev
+**Type :** Fix  
+**Fichiers touchés :** `src/lib/rate-limit.ts`  
+**Raison :** En développement local, `UPSTASH_REDIS_REST_URL` contient le placeholder `"https://..."` ce qui faisait planter l'instanciation Redis et bloquait toutes les routes API (POST /api/users/role → 500).  
+**Impact :** Le rate limiting est maintenant optionnel — si les credentials Redis ne sont pas configurés, les requêtes passent directement. En production avec les vraies credentials Upstash, le rate limiting est actif.
+
+### [2026-06-12] Phase 3 — Dashboards par rôle
+**Type :** Feature  
+**Fichiers touchés :**
+- `src/components/dashboard/DashboardSidebar.tsx` — sidebar animée, navigation par rôle, avatar, déconnexion
+- `src/components/dashboard/DashboardHeader.tsx` — header sticky, titre dynamique, switch FR/EN, cloche notifications
+- `src/app/[locale]/(dashboard)/dashboard/expediteur/page.tsx` — dashboard Expéditeur (stats + derniers envois)
+- `src/app/[locale]/(dashboard)/dashboard/transporteur/page.tsx` — dashboard Transporteur (missions + disponibles)
+- `src/app/[locale]/(dashboard)/dashboard/entrepot/page.tsx` — dashboard Entrepôt (stock + barre occupation)
+- `src/app/[locale]/(dashboard)/dashboard/admin/page.tsx` — dashboard Admin (KPIs + utilisateurs + envois)
+- `src/components/dashboard/roles/` — 4 composants client par rôle
+
+**Raison :** Phase 3 complète — 4 dashboards opérationnels avec données Neon via Prisma  
+**Impact :** Chaque rôle accède à son espace personnalisé. Animations Framer Motion, thème Smart Africain, bilinguisme FR/EN.
+
 ---
