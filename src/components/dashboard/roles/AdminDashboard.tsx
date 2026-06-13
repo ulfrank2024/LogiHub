@@ -9,6 +9,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn, buttonVariants, formatCurrency, formatDate } from "@/lib/utils";
 import { fadeInUp, staggerContainer, cardHover } from "@/lib/animations";
+import { AdminCharts } from "@/components/dashboard/admin/AdminCharts";
 
 type Role = "EXPEDITEUR" | "TRANSPORTEUR" | "RESPONSABLE_ENTREPOT" | "ADMIN";
 type Shipment = { id: string; status: string; origin: string; destination: string; price: number; createdAt: Date };
@@ -31,9 +32,12 @@ const roleLabels: Record<Role, { fr: string; en: string }> = {
   ADMIN:                { fr: "Admin",            en: "Admin" },
 };
 
-export function AdminDashboard({ user, stats, recentShipments, recentUsers, locale }: {
+export function AdminDashboard({ user, stats, recentShipments, recentUsers, revenueData, shipmentsData, locale }: {
   user: User; stats: Stats;
-  recentShipments: Shipment[]; recentUsers: User[]; locale: string;
+  recentShipments: Shipment[]; recentUsers: User[];
+  revenueData: { date: string; revenue: number }[];
+  shipmentsData: { week: string; envois: number }[];
+  locale: string;
 }) {
   const isFr = locale === "fr";
   const hasAlerts = stats.pendingRequests > 0 || stats.shipmentsEnAttente > 5;
@@ -134,6 +138,11 @@ export function AdminDashboard({ user, stats, recentShipments, recentUsers, loca
           <TrendingUp className="w-4 h-4" />
           {isFr ? "Transactions" : "Transactions"}
         </Link>
+      </motion.div>
+
+      {/* Graphiques */}
+      <motion.div variants={fadeInUp}>
+        <AdminCharts revenueData={revenueData} shipmentsData={shipmentsData} locale={locale} />
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

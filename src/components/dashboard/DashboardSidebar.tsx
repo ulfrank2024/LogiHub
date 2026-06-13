@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   LayoutDashboard, PackagePlus, Package2,
-  Warehouse, Users, BarChart3, Settings, LogOut,
+  Warehouse, Users, BarChart3, Settings, LogOut, Truck,
 } from "lucide-react";
 import { useClerk } from "@clerk/nextjs";
 import { UserAvatar } from "@/components/avatar/UserAvatar";
@@ -32,8 +32,10 @@ const navByRole: Record<string, { href: string; label: { fr: string; en: string 
   ],
   ADMIN: [
     { href: "admin",              label: { fr: "Tableau de bord",   en: "Dashboard" },          icon: LayoutDashboard, primary: true },
+    { href: "admin/envois",       label: { fr: "Suivi envois",      en: "Shipments" },          icon: Truck },
+    { href: "admin/entrepots",    label: { fr: "Entrepôts",         en: "Warehouses" },         icon: Warehouse },
     { href: "admin/utilisateurs", label: { fr: "Utilisateurs",      en: "Users" },              icon: Users },
-    { href: "admin/demandes",     label: { fr: "Demandes entrepôt", en: "Warehouse requests" }, icon: Warehouse },
+    { href: "admin/demandes",     label: { fr: "Demandes",          en: "Requests" },           icon: Package2 },
     { href: "admin/transactions", label: { fr: "Transactions",      en: "Transactions" },       icon: BarChart3 },
   ],
 };
